@@ -1,0 +1,48 @@
+﻿@using GamesClub.Models
+@model IEnumerable<Empleado>
+@{
+    ViewData["Title"] = "Empleado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2 style="color: darkorange">Listado  de Empleados</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Cod Empleado</th>
+            <th>Tipo empleado</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DUI</th>
+            <th>Estado</th>
+            <th>Imagen</th>
+            <th>Usuario</th>
+            <th>Clave</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Usamos foreach para recorrer la lista recibida como parámetro *@
+        @foreach (var empleado in Model)
+        {
+            <tr>
+                <td>@empleado.codEmpleado</td>
+                <td>@empleado.IdTipoEmpleado</td>
+                <td>@empleado.Nombres</td>
+                <td>@empleado.Apellidos</td>
+                <td>@empleado.Dui</td>
+                <td>@(empleado.Estado == true ? "Activo" : "Inactivo")</td>
+                <td width="10px" height="100px">@empleado.Imagen</td>
+                <td>@empleado.Usuario</td>
+                <td>@empleado.Clave</td>
+                
+
+                @* Columna de mantenimiento *@
+                <td>
+                    <a class="btn btn-primary btn-sm" asp-action="Modificar" asp-controller="Empleado" asp-route-codEmpleado="@empleado.codEmpleado">Modificar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-controller="Empleado" asp-route-codEmpleado="@empleado.codEmpleado">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <a class="btn btn-success btn-sm" asp-action="Agregar" asp-controller="Empleado">Crear Nuevo</a>
+</table>
