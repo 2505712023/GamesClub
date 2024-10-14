@@ -1,0 +1,36 @@
+﻿@* Indicar el modelo asociado a la página *@
+@model IEnumerable<TipoEmpleado>
+@{
+    ViewData["Title"] = "Tipos Empleado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="color: darkorange">Listado de Tipos de Empleado</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Id Tipo Empleado</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Usamos foreach para recorrer la lista recibida como parámetro *@
+        @foreach (var tipoEmpleado in Model)
+        {
+            <tr>
+                <td>@tipoEmpleado.IdTipoEmpleado</td>
+                <td>@tipoEmpleado.Descripcion</td>
+                <td>@(tipoEmpleado.Estado == true ? "Activo" : "Inactivo")</td>
+
+                @* Columna de mantenimiento *@
+                <td>
+                    <a class="btn btn-primary btn-sm" asp-action="Modificar" asp-controller="Home" asp-route-IdTipoEmpleado="@tipoEmpleado.IdTipoEmpleado">Modificar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-controller="Home" asp-route-IdTipoEmpleado="@tipoEmpleado.IdTipoEmpleado">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <a class="btn btn-success btn-sm" asp-action="Agregar" asp-controller="Home">Crear Nuevo</a>
+</table>

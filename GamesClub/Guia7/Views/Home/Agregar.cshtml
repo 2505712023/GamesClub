@@ -1,0 +1,33 @@
+﻿@* Indicar el modelo que va a utilizar *@
+@model TipoEmpleado
+@{
+    ViewData["Title"] = "Agregar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Agregar</h1>
+
+<div class="card">
+    <div class="card-header">
+        Crear Tipo de Empleado
+    </div>
+    <div class="card-body">
+        <form asp-action="Agregar" asp-controller="Home" method="post">
+            <div class="mb-3">
+                <label class="form-label">Código</label>
+                <input asp-for="IdTipoEmpleado" type="text" class="form-control" >
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <input asp-for="Descripcion" type="text" class="form-control" >
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Estado</label>
+                <input asp-for="Estado" type="text" class="form-control">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a asp-action="Index" asp-controller="Home" class="btn btn-warning">Volver al listado</a>
+        </form>
+    </div>
+</div>
