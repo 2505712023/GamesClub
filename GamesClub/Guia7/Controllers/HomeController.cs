@@ -31,7 +31,7 @@ namespace Guia7.Controllers
         // Acción que se ejecuta al dar clic en el botón "Crear Nuevo"
         [HttpPost]
         public IActionResult Agregar(IFormCollection collection)
-        {
+        { 
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
 
@@ -40,7 +40,7 @@ namespace Guia7.Controllers
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = bool.Parse(collection["estado"])
+                Estado = Convert.ToBoolean(collection["estado"])
             };
 
             // Llamar al método Ingresar de la clase "MantenimientoTipoEmpleado"
@@ -49,7 +49,15 @@ namespace Guia7.Controllers
             // Llamar la acción "Index"
             return RedirectToAction("Index");
         }
+        public IActionResult Modificar(string IdTipoEmpleado)
+        {
+            TipoEmpleado TipoEmp = new TipoEmpleado();
+            // Crear objeto de la clase MantenimientoTipoEmpleado
+            MantenimientoTipoEmpleado MTipEmp = new();
+            TipoEmp = MTipEmp.llenaDatos(IdTipoEmpleado);
 
+            return View("Modificar",TipoEmp);
+        }
         public IActionResult Privacy()
         {
             return View();
@@ -59,6 +67,27 @@ namespace Guia7.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpPost]
+        public IActionResult Modificar(IFormCollection collection)
+        {
+            // Crear objeto de la clase MantenimientoTipoEmpleado
+            MantenimientoTipoEmpleado MTipEmp = new();
+
+            // Crear objeto de tipo TipoEmpleado
+            TipoEmpleado newTipoEmpleado = new()
+            {
+                IdTipoEmpleado = collection["idTipoEmpleado"],
+                Descripcion = collection["descripcion"],
+                Estado = Convert.ToBoolean(collection["estado"])
+            };
+
+            // Llamar al método Ingresar de la clase "MantenimientoTipoEmpleado"
+            MTipEmp.Actualizar(newTipoEmpleado);
+
+            // Llamar la acción "Index"
+            return RedirectToAction("Index");
         }
     }
 }
