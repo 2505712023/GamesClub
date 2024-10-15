@@ -1,0 +1,89 @@
+﻿@model GamesClub.Models.Empleado
+@{
+    ViewData["Title"] = "Agregar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header">
+        Crear Empleado
+    </div>
+    <div class="card-body">
+        <form asp-action="Agregar" asp-controller="Empleado" method="post">
+            <div class="mb-3">
+                <label asp-for="codEmpleado" class="form-label"></label>
+                <input asp-for="codEmpleado" type="text" class="form-control">
+              
+            </div>
+         <div class="mb-3">
+    <label for="idTipoEmpleado" class="form-label">Tipo de Empleado</label>
+    <select class="form-control" id="idTipoEmpleado" name="idTipoEmpleado">
+        <option value="">Selecciona un tipo</option>
+        @if (ViewBag.TipoEmpleados != null)
+        {
+            foreach (var tipoEmpleado in (List<TipoEmpleado>)ViewBag.TipoEmpleados)
+            {
+                <option value="@tipoEmpleado.IdTipoEmpleado">@tipoEmpleado.Descripcion</option>
+            }
+        }
+    </select>
+</div>
+
+            <div class="mb-3">
+                <label asp-for="Nombres" class="form-label"></label>
+                <input asp-for="Nombres" type="text" class="form-control">
+       
+            </div>
+            <div class="mb-3">
+                <label asp-for="Apellidos" class="form-label"></label>
+                <input asp-for="Apellidos" type="text" class="form-control">
+                
+            </div>
+            <div class="mb-3">
+                <label asp-for="Dui" class="form-label"></label>
+                <input asp-for="Dui" type="text" class="form-control">
+    
+            </div>
+            <div class="mb-3">
+                <label asp-for="Estado" class="form-label"></label>
+              <select asp-for="Estado" class="form-control">
+                  <option value="" disabled="" selected="">Seleccionar estado</option>
+                  <option value="true">Activo</option>
+                  <option value="false">Inactivo</option>
+              </select>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Imagen" class="form-label"></label>
+                <input asp-for="Imagen" type="text" class="form-control">
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Usuario" class="form-label"></label>
+                <input asp-for="Usuario" type="text" class="form-control">
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Clave" class="form-label"></label>
+                <input asp-for="Clave" type="password" class="form-control">
+
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a asp-action="Empleado" asp-controller="Empleado" class="btn btn-warning">Volver a la lista</a>
+        </form>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var errorMessage = '@TempData["ErrorMessage"]';
+            if (errorMessage) {
+                alert(errorMessage); // Muestra el mensaje de error en una ventana emergente
+            }
+        });
+    </script>
+}

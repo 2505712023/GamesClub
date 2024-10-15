@@ -4,7 +4,7 @@
     {
         public string codEmpleado { get; set; }
 
-        public string? IdTipoEmpleado { get; set; }
+        public string IdTipoEmpleado { get; set; }
         public string Nombres { get; set; }
 
         public string Apellidos { get; set; }
@@ -19,4 +19,5 @@
 
         public string Clave { get; set; }
     }
+    //Listo
 }

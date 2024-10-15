@@ -10,13 +10,69 @@ namespace GamesClub.Models
     {
         // Definir variable para establecer la conexión a base de datos
         private SqlConnection? conexion;
-
+       
         // Método para listar todos los registros de la tabla "Empleado"
+        public bool DuiExiste(string dui)
+        {
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new SqlConnection(conex.getCadConexion()))
+            {
+                conexion.Open();
+                SqlCommand comando = new SqlCommand("SELECT COUNT(*) FROM Empleado WHERE Dui = @Dui", conexion);
+                comando.Parameters.AddWithValue("@Dui", dui);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+        public bool CodExiste(string codEmpleado)
+        {
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new SqlConnection(conex.getCadConexion()))
+            {
+                conexion.Open();
+                SqlCommand comando = new SqlCommand("SELECT COUNT(*) FROM Empleado WHERE codEmpleado = @codEmpleado", conexion);
+                comando.Parameters.AddWithValue("@codEmpleado", codEmpleado);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+        public bool UsuarioExiste(string usuario)
+        {
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new SqlConnection(conex.getCadConexion()))
+            {
+                conexion.Open();
+                SqlCommand comando = new SqlCommand("SELECT COUNT(*) FROM Empleado WHERE Usuario = @Usuario", conexion);
+                comando.Parameters.AddWithValue("@Usuario", usuario);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+
 
         public int Ingresar(Empleado empleado) {
-
+          
+            
+            
+           
             try
-            {   
+            {
+                // Verificar campos requeridos
+                if (string.IsNullOrEmpty(empleado.codEmpleado) ||
+                    string.IsNullOrEmpty(empleado.IdTipoEmpleado) ||
+                    string.IsNullOrEmpty(empleado.Nombres) ||
+                    string.IsNullOrEmpty(empleado.Apellidos) ||
+                    string.IsNullOrEmpty(empleado.Dui) ||
+                    empleado.Estado == null ||
+                    string.IsNullOrEmpty(empleado.Imagen) ||
+                    string.IsNullOrEmpty(empleado.Usuario) ||
+                    string.IsNullOrEmpty(empleado.Clave))
+                {
+                    return -1; // Retorna -1 si hay campos requeridos vacíos
+                }
                 //crear objeto de la clase conexión
                 Conexion conex = new();
                 //definir la conexipin a la BD
@@ -31,7 +87,7 @@ namespace GamesClub.Models
                 comando.Parameters.Add("@nombres", SqlDbType.VarChar);
                 comando.Parameters.Add("@apellidos", SqlDbType.VarChar);
                 comando.Parameters.Add("@dui", SqlDbType.VarChar);
-                comando.Parameters.Add("@estado", SqlDbType.VarChar);
+                comando.Parameters.Add("@estado", SqlDbType.Bit);
                 comando.Parameters.Add("@imagen", SqlDbType.VarChar);
                 comando.Parameters.Add("@usuario", SqlDbType.VarChar);
                 comando.Parameters.Add("@clave", SqlDbType.VarChar);
@@ -47,6 +103,9 @@ namespace GamesClub.Models
                 comando.Parameters["@imagen"].Value = empleado.Imagen;
                 comando.Parameters["@usuario"].Value = empleado.Usuario;
                 comando.Parameters["@clave"].Value = empleado.Clave;
+               
+
+
 
                 // Ejecutar instrucción SQL
                 int ingresado= comando.ExecuteNonQuery();
@@ -64,8 +123,39 @@ namespace GamesClub.Models
                 return 0;
             }
         }
+        public List<TipoEmpleado> listaTEmpleado()
+        {
+            Conexion conex = new Conexion();
+            List<TipoEmpleado> listaTipoEmpleado = new List<TipoEmpleado>();
 
+            // Definir la conexión a la BD
+            using (SqlConnection conexion = new SqlConnection(conex.getCadConexion()))
+            {
+                // Abrir la conexión 
+                conexion.Open();
 
+                // Crear el comando SQL
+                SqlCommand comando = new SqlCommand("SELECT IdTipoEmpleado, Descripcion FROM TipoEmpleado", conexion);
+
+                // Ejecutar el comando y leer los datos
+                SqlDataReader leer = comando.ExecuteReader();
+                while (leer.Read())
+                {
+                    // Crear el objeto TipoEmpleado
+                    TipoEmpleado tipoEmpleado = new TipoEmpleado()
+                    {
+                        IdTipoEmpleado = leer["IdTipoEmpleado"].ToString(),   // Verifica que la columna se llame exactamente así en la base de datos
+                        Descripcion = leer["Descripcion"].ToString()          // Asegúrate que la columna se llama Descripcion
+                    };
+
+                    // Agregar el objeto a la lista
+                    listaTipoEmpleado.Add(tipoEmpleado);
+                }
+            }
+
+            // Retornar la lista de TipoEmpleado
+            return listaTipoEmpleado;
+        }
 
 
         public List<Empleado> ListarTodos() {
