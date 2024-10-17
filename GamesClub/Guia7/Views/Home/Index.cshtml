@@ -22,7 +22,7 @@
             <tr>
                 <td>@tipoEmpleado.IdTipoEmpleado</td>
                 <td>@tipoEmpleado.Descripcion</td>
-                <td>@tipoEmpleado.Estado</td>
+                <td>@(tipoEmpleado.Estado == true ? "Activo" : "Inactivo")</td>
 
                 @* Columna de mantenimiento *@
                 <td>
