@@ -75,12 +75,16 @@ namespace Guia7.Controllers
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
 
+            bool estado = collection["estado"].Count > 1 ?
+                  collection["estado"][0] == "true" :
+                  Convert.ToBoolean(collection["estado"]);
+
             // Crear objeto de tipo TipoEmpleado
             TipoEmpleado newTipoEmpleado = new()
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = Convert.ToBoolean(collection["estado"])
+                Estado = estado
             };
 
             // Llamar al método Ingresar de la clase "MantenimientoTipoEmpleado"
