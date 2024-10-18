@@ -97,5 +97,18 @@ namespace Guia7.Controllers
             // Llamar la acción "Index"
             return RedirectToAction("Index");
         }
+        //Acción que tiene por objetivo eliminar los datos de un alumno
+        public IActionResult Eliminar(String IdTipoEmpleado)
+        {
+            //Definimos un objeto de tipo "MantenimientoTipoEmpleado"
+            MantenimientoTipoEmpleado MTipoEmp = new MantenimientoTipoEmpleado();
+
+            //Llamamos al método "Borrar"
+            MTipoEmp.Borrar(IdTipoEmpleado);
+
+            //Invocamos acción "Index"
+
+            return RedirectToAction("Index");
+        }
     }
 }

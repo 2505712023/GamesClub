@@ -227,5 +227,31 @@ namespace Guia7.Models
                 return 0;
             }
         }
+        public int Borrar(string IdTipoEmpleado)
+        {
+
+
+            // Crear objeto de la clase conexión
+            Conexion conn = new();
+
+            // Definir la conexión a la BD
+            conexion = new(conn.getCadConexion());
+            conexion.Open();
+
+            // Definir variable para almacenar el query
+            SqlCommand comando = new($"delete from TipoEmpleado where IdTipoEmpleado = @idTipoEmpleado", conexion); //consulta de delete
+            comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
+
+            // Pasar los datos digitados por el usuario a los parámetros                
+            comando.Parameters["@idTipoEmpleado"].Value = IdTipoEmpleado;
+
+            // Ejecutar instrucción SQL
+            int i = comando.ExecuteNonQuery();
+            conexion.Close();
+
+            return i;
+
+
+        }
     }
 }
