@@ -59,12 +59,17 @@ namespace GamesClub.Controllers
         }
 
         // Acción GET para mostrar la página de confirmación de eliminación
-        public IActionResult Eliminar(string codVideojuego)
+        public IActionResult Eliminar(String codVideojuego)
         {
-            // Crear objeto de la clase MantenimientoVideojuego
+            //Definimos un objeto de tipo "MantenimientoTipoEmpleado"
             MantenimientoVideojuego MVideojuego = new();
 
-            return View(videojuego); // Mostrar vista de confirmación
+            //Llamamos al método "Borrar"
+            MVideojuego.Eliminar(codVideojuego);
+
+            //Invocamos acción "Index"
+
+            return RedirectToAction("Index");
         }
 
         //// Acción POST para confirmar y realizar la eliminación
