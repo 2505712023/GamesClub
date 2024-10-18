@@ -108,62 +108,62 @@ namespace GamesClub.Models
             return listaVideojuegos;
         }
 
-        // Método para obtener un Videojuego por su código
-        public Videojuego ObtenerPorId(int id)
-        {
-            try
-            {
-                // Crear objeto de la clase conexión
-                Conexion conn = new();
+        //// Método para obtener un Videojuego por su código
+        //public Videojuego ObtenerPorId(int id)
+        //{
+        //    try
+        //    {
+        //        // Crear objeto de la clase conexión
+        //        Conexion conn = new();
 
-                // Definir la conexión a la BD
-                conexion = new(conn.getCadConexion());
-                conexion.Open();
+        //        // Definir la conexión a la BD
+        //        conexion = new(conn.getCadConexion());
+        //        conexion.Open();
 
-                // Definir variable para almacenar el query
-                SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @id", conexion);
-                comando.Parameters.AddWithValue("@id", id);
+        //        // Definir variable para almacenar el query
+        //        SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @id", conexion);
+        //        comando.Parameters.AddWithValue("@id", id);
 
-                // Crear un objeto SqlDataReader
-                SqlDataReader lector = comando.ExecuteReader();
+        //        // Crear un objeto SqlDataReader
+        //        SqlDataReader lector = comando.ExecuteReader();
 
-                // Si encuentra un registro
-                if (lector.Read())
-                {
-                    // Crear y devolver un objeto de tipo Videojuego
-                    Videojuego videojuego = new()
-                    {
-                        codVideojuego = lector["codVideojuego"].ToString(),
-                        titulo = lector["titulo"].ToString(),
-                        genero = lector["genero"].ToString(),
-                        plataforma = lector["plataforma"].ToString(),
-                        fechaLanzamiento = (DateTime)lector["fechaLanzamiento"],
-                        desarrollador = lector["desarrollador"].ToString(),
-                        publisher = lector["publisher"].ToString(),
-                        precio = (decimal)lector["precio"],
-                        descripcion = lector["descripcion"].ToString()
-                    };
+        //        // Si encuentra un registro
+        //        if (lector.Read())
+        //        {
+        //            // Crear y devolver un objeto de tipo Videojuego
+        //            Videojuego videojuego = new()
+        //            {
+        //                codVideojuego = lector["codVideojuego"].ToString(),
+        //                titulo = lector["titulo"].ToString(),
+        //                genero = lector["genero"].ToString(),
+        //                plataforma = lector["plataforma"].ToString(),
+        //                fechaLanzamiento = (DateTime)lector["fechaLanzamiento"],
+        //                desarrollador = lector["desarrollador"].ToString(),
+        //                publisher = lector["publisher"].ToString(),
+        //                precio = (decimal)lector["precio"],
+        //                descripcion = lector["descripcion"].ToString()
+        //            };
 
-                    // Cerrar la conexión
-                    conexion.Close();
+        //            // Cerrar la conexión
+        //            conexion.Close();
 
-                    return videojuego;
-                }
+        //            return videojuego;
+        //        }
 
-                // Cerrar la conexión si no encuentra registro
-                conexion.Close();
-                return null;
-            }
-            catch (Exception ex)
-            {
-                // Control de errores
-                string error = ex.Message;
-                return null;
-            }
-        }
+        //        // Cerrar la conexión si no encuentra registro
+        //        conexion.Close();
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Control de errores
+        //        string error = ex.Message;
+        //        return null;
+        //    }
+        //}
 
         // Método para eliminar un Videojuego por su código
-        public int Eliminar(int id)
+        public int Eliminar(string codVideojuego)
         {
             try
             {
@@ -175,8 +175,8 @@ namespace GamesClub.Models
                 conexion.Open();
 
                 // Definir variable para almacenar el query
-                SqlCommand comando = new($"delete from Videojuegos where codVideojuego = @id", conexion);
-                comando.Parameters.AddWithValue("@id", id);
+                SqlCommand comando = new($"delete from Videojuegos where codVideojuego = @codVideojuego", conexion);
+                comando.Parameters.AddWithValue("@codVideojuego", codVideojuego);
 
                 // Ejecutar instrucción SQL
                 int eliminado = comando.ExecuteNonQuery();
@@ -196,5 +196,3 @@ namespace GamesClub.Models
         }
     }
 }
-
-

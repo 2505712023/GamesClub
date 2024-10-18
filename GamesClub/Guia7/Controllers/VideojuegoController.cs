@@ -59,45 +59,35 @@ namespace GamesClub.Controllers
         }
 
         // Acción GET para mostrar la página de confirmación de eliminación
-        public IActionResult Eliminar(int id)
+        public IActionResult Eliminar(string codVideojuego)
         {
             // Crear objeto de la clase MantenimientoVideojuego
             MantenimientoVideojuego MVideojuego = new();
-
-            // Obtener el videojuego por su id
-            Videojuego videojuego = MVideojuego.ObtenerPorId(id);
-
-            // Verificar si el videojuego existe
-            if (videojuego == null)
-            {
-                return NotFound(); // Si no se encuentra, retornar 404
-            }
 
             return View(videojuego); // Mostrar vista de confirmación
         }
 
-        // Acción POST para confirmar y realizar la eliminación
-        [HttpPost, ActionName("Eliminar")]
-        [ValidateAntiForgeryToken]
-        public IActionResult ConfirmarEliminacion(int id)
-        {
-            // Crear objeto de la clase MantenimientoVideojuego
-            MantenimientoVideojuego MVideojuego = new();
+        //// Acción POST para confirmar y realizar la eliminación
+        //[HttpPost, ActionName("Eliminar")]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult ConfirmarEliminacion(int id)
+        //{
+        //    // Crear objeto de la clase MantenimientoVideojuego
+        //    MantenimientoVideojuego MVideojuego = new();
 
-            // Obtener el videojuego por su id
-            Videojuego videojuego = MVideojuego.ObtenerPorId(id);
+        //    // Obtener el videojuego por su id
+        //    Videojuego videojuego = MVideojuego.ObtenerPorId(id);
 
-            if (videojuego == null)
-            {
-                return NotFound(); // Si no se encuentra, retornar 404
-            }
+        //    if (videojuego == null)
+        //    {
+        //        return NotFound(); // Si no se encuentra, retornar 404
+        //    }
 
-            // Llamar al método para eliminar el videojuego
-            MVideojuego.Eliminar(id);
+        //    // Llamar al método para eliminar el videojuego
+        //    MVideojuego.Eliminar(id);
 
-            // Redirigir a la página principal después de eliminar
-            return RedirectToAction(nameof(Index));
-        }
+        //    // Redirigir a la página principal después de eliminar
+        //    return RedirectToAction(nameof(Index));
+        //}
     }
 }
-

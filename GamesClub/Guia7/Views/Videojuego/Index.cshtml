@@ -46,11 +46,7 @@
                     <a class="btn btn-primary btn-sm" asp-action="Modificar" asp-controller="Videojuego" asp-route-id="@videojuego.codVideojuego">Modificar</a>
 
                     @* Botón para eliminar con confirmación *@
-                    <form asp-action="Eliminar" asp-controller="Videojuego" asp-route-id="@videojuego.codVideojuego" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de eliminar el videojuego @videojuego.titulo?');">
-                            Eliminar
-                        </button>
-                    </form>
+                    <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-controller="Home" asp-route-IdTipoEmpleado="@videojuego.codVideojuego">Eliminar</a>      
                 </td>
             </tr>
         }
