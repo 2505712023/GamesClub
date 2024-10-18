@@ -20,7 +20,7 @@ namespace Guia7.Models
 
                 if (ValidaTipoEmpleado(tipoEmpleado.IdTipoEmpleado).Rows.Count > 0)
                 {
-                    throw new ArgumentOutOfRangeException("Ya existe un registro de Id Tipo empleado en la base de datos");
+                    return 0;
                 }
 
 
@@ -127,34 +127,31 @@ namespace Guia7.Models
         public TipoEmpleado ObtenerTipoEmpleado(string id)
         {
             // Crear objeto de la clase conexión
-            Conexion conn = new();
+            Conexion conn = new Conexion();
             // Definir la conexión a la BD
-            conexion = new(conn.getCadConexion());
+            conexion = new SqlConnection(conn.getCadConexion());
             conexion.Open();
-            TipoEmpleado tipoEmpleado = null;
 
-            string query = "SELECT * FROM TipoEmpleado WHERE IdTipoEmpleado = @IdTipoEmpleado";
-            using (SqlCommand comando = new SqlCommand(query, conexion))
+
+            SqlCommand comando = new SqlCommand("SELECT * FROM TipoEmpleado WHERE IdTipoEmpleado = @IdTipoEmpleado",conexion);
+
+            comando.Parameters.Add("@IdTipoEmpleado", SqlDbType.VarChar);
+            comando.Parameters["@IdTipoEmpleado"].Value = id;
+
+            SqlDataReader Registros = comando.ExecuteReader();
+
+            TipoEmpleado tipoEmp = new TipoEmpleado();
+
+            if (Registros.Read())
             {
-                comando.Parameters.AddWithValue("@IdTipoEmpleado", id);
-
-                conexion.Open();
-                using (SqlDataReader reader = comando.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        tipoEmpleado = new TipoEmpleado
-                        {
-                            IdTipoEmpleado = reader["IdTipoEmpleado"].ToString(),
-                            Descripcion = reader["Descripcion"].ToString(),
-                            Estado = Convert.ToBoolean(reader["Estado"])
-                        };
-                    }
-                }
-                conexion.Close();
+                tipoEmp.IdTipoEmpleado = Registros["IdTipoEmpleado"].ToString();
+                tipoEmp.Descripcion = Registros["Descripcion"].ToString();
+                tipoEmp.Estado = (bool)Registros["Estado"];
             }
 
-            return tipoEmpleado;
+            conexion.Close();
+
+            return tipoEmp;
         }
 
         public TipoEmpleado llenaDatos(string IdTipoEmpleado)
@@ -183,15 +180,15 @@ namespace Guia7.Models
 
             return DaTipoEmpleado;
         }
-        public int Actualizar(TipoEmpleado tipoEmpleado)
+        public int Modificar(TipoEmpleado tipoEmpleado)
         {
             try
             {
                 //validacion para que no se repita el tipo de comprobante
 
-                if (ValidaTipoEmpleado(tipoEmpleado.IdTipoEmpleado).Rows.Count == 0)
+                if (ValidaTipoEmpleado(tipoEmpleado.IdTipoEmpleado).Rows.Count > 1)
                 {
-                    throw new ArgumentOutOfRangeException("No hay registro por actualizar");
+                    return 0;
                 }
 
 
@@ -204,7 +201,7 @@ namespace Guia7.Models
 
                 // Definir variable para almacenar el query
                 SqlCommand comando = new($"update TipoEmpleado set Descripcion = @descripcion, Estado = @estado where idTipoEmpleado = @idTipoEmpleado ", conexion);
-                comando.Parameters.Add("@idTIpoEmpleado", SqlDbType.VarChar);
+                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
                 comando.Parameters.Add("@descripcion", SqlDbType.VarChar);
                 comando.Parameters.Add("@estado", SqlDbType.Bit);
 
@@ -229,28 +226,29 @@ namespace Guia7.Models
         }
         public int Borrar(string IdTipoEmpleado)
         {
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
 
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
 
-            // Crear objeto de la clase conexión
-            Conexion conn = new();
+                // Definir variable para almacenar el query
+                SqlCommand comando = new("delete from TipoEmpleado where IdTipoEmpleado = @idTipoEmpleado", conexion); //consulta de delete
+                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
+                comando.Parameters["@idTipoEmpleado"].Value = IdTipoEmpleado;
 
-            // Definir la conexión a la BD
-            conexion = new(conn.getCadConexion());
-            conexion.Open();
-
-            // Definir variable para almacenar el query
-            SqlCommand comando = new($"delete from TipoEmpleado where IdTipoEmpleado = @idTipoEmpleado", conexion); //consulta de delete
-            comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
-
-            // Pasar los datos digitados por el usuario a los parámetros                
-            comando.Parameters["@idTipoEmpleado"].Value = IdTipoEmpleado;
-
-            // Ejecutar instrucción SQL
-            int i = comando.ExecuteNonQuery();
-            conexion.Close();
-
-            return i;
-
+                // Ejecutar instrucción SQL
+                int i = comando.ExecuteNonQuery();
+                conexion.Close();
+                return i;
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
 
         }
     }

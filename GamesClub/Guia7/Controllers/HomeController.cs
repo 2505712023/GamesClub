@@ -1,6 +1,7 @@
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Threading.Tasks.Sources;
 
 namespace Guia7.Controllers
 {
@@ -12,7 +13,14 @@ namespace Guia7.Controllers
         {
             _logger = logger;
         }
+        // Usar TempData en Razor Pages
+        [TempData]
+        public string ErrorMessage { get; set; }
 
+        public void OnGet()
+        {
+            // Código de lógica para OnGet
+        }
         public IActionResult Index()
         {
             // Crear objeto de la clase MantenimientoTipoEmpleado
@@ -31,7 +39,12 @@ namespace Guia7.Controllers
         // Acción que se ejecuta al dar clic en el botón "Crear Nuevo"
         [HttpPost]
         public IActionResult Agregar(IFormCollection collection)
-        { 
+        {
+            //verifica si hay errores
+            if (ModelState.IsValid == false)
+            {
+                return View();
+            }
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
 
@@ -44,7 +57,7 @@ namespace Guia7.Controllers
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = Convert.ToBoolean(collection["estado"])
+                Estado = bool.Parse(collection["estado"])
             };
 
             // Llamar al método Ingresar de la clase "MantenimientoTipoEmpleado"
@@ -55,12 +68,20 @@ namespace Guia7.Controllers
         }
         public IActionResult Modificar(string IdTipoEmpleado)
         {
-            TipoEmpleado TipoEmp = new TipoEmpleado();
-            // Crear objeto de la clase MantenimientoTipoEmpleado
-            MantenimientoTipoEmpleado MTipEmp = new();
-            TipoEmp = MTipEmp.llenaDatos(IdTipoEmpleado);
+      
+            try
+            {
+                MantenimientoTipoEmpleado MtipoEmp = new MantenimientoTipoEmpleado();
+                // Crear objeto de la clase MantenimientoTipoEmpleado
+                TipoEmpleado TipEmp = MtipoEmp.ObtenerTipoEmpleado(IdTipoEmpleado);
 
-            return View("Modificar",TipoEmp);
+                return View(TipEmp);
+            }
+            catch (Exception ex)
+            {
+                ViewData["ErrorMessage"] = $"Ocurrió un error al eliminar: {ex.Message}";
+                return View("Index");  // Volver a la misma página
+            }
         }
         public IActionResult Privacy()
         {
@@ -77,22 +98,18 @@ namespace Guia7.Controllers
         public IActionResult Modificar(IFormCollection collection)
         {
             // Crear objeto de la clase MantenimientoTipoEmpleado
-            MantenimientoTipoEmpleado MTipEmp = new();
-
-            bool estado = collection["estado"].Count > 1 ?
-                  collection["estado"][0] == "true" :
-                  Convert.ToBoolean(collection["estado"]);
+            MantenimientoTipoEmpleado MTipEmp = new MantenimientoTipoEmpleado();
 
             // Crear objeto de tipo TipoEmpleado
-            TipoEmpleado newTipoEmpleado = new()
+            TipoEmpleado tipoEmp = new TipoEmpleado()
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = estado
+                Estado = bool.Parse(collection["estado"])
             };
 
             // Llamar al método Ingresar de la clase "MantenimientoTipoEmpleado"
-            MTipEmp.Actualizar(newTipoEmpleado);
+            MTipEmp.Modificar(tipoEmp);
 
             // Llamar la acción "Index"
             return RedirectToAction("Index");
@@ -100,13 +117,8 @@ namespace Guia7.Controllers
         //Acción que tiene por objetivo eliminar los datos de un alumno
         public IActionResult Eliminar(String IdTipoEmpleado)
         {
-            //Definimos un objeto de tipo "MantenimientoTipoEmpleado"
             MantenimientoTipoEmpleado MTipoEmp = new MantenimientoTipoEmpleado();
-
-            //Llamamos al método "Borrar"
             MTipoEmp.Borrar(IdTipoEmpleado);
-
-            //Invocamos acción "Index"
 
             return RedirectToAction("Index");
         }
