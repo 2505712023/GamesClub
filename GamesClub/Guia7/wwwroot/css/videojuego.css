@@ -1,0 +1,12 @@
+﻿.container{
+    margin-left: 3% !important;
+    padding: 0px !important;
+}
+
+table th{
+    text-align: center
+}
+
+.btn-success{
+    margin-bottom: 12px;
+}
