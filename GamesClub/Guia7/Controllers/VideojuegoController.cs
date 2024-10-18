@@ -56,5 +56,42 @@ namespace GamesClub.Controllers
             // Llamar la acción "Index"
             return RedirectToAction("Index");
         }
+
+        public IActionResult Modificar(string IdTipoEmpleado)
+        {
+            MantenimientoVideojuego Mvideojuego = new MantenimientoVideojuego();
+
+            Videojuego videojuego = new Videojuego();
+            videojuego = Mvideojuego.VideojuegoModificar(IdTipoEmpleado);
+            return View(videojuego);
+        }
+
+        [HttpPost]
+        public IActionResult Modificar(IFormCollection collection)
+        {
+            // Crear objeto de la clase MantenimientoVideojuego
+            MantenimientoVideojuego MVideojuego = new();
+
+            // Crear objeto de tipo Videojuego
+            Videojuego videojuego = new()
+            {
+                codVideojuego = collection["codVideojuego"].ToString(),
+                titulo = collection["titulo"].ToString(),
+                genero = collection["genero"].ToString(),
+                plataforma = collection["plataforma"].ToString(),
+                fechaLanzamiento = Convert.ToDateTime(collection["fechaLanzamiento"]),
+                desarrollador = collection["desarrollador"].ToString(),
+                publisher = collection["publisher"].ToString(),
+                precio = Convert.ToDecimal(collection["precio"].ToString().Replace("$", "")),
+                descripcion = collection["descripcion"].ToString()
+            };
+
+            // Llamar al método Modificar de la clase "MantenimientoVideojuego"
+            MVideojuego.Modificar(videojuego);
+
+            // Llamar la acción "Index"
+            return RedirectToAction("Index");
+        }
+
     }
 }
