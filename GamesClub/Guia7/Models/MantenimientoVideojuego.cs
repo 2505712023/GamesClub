@@ -107,5 +107,94 @@ namespace GamesClub.Models
             // Retornamos la lista de TiposEmpleado
             return listaVideojuegos;
         }
+
+        // Método para obtener un Videojuego por su código
+        public Videojuego ObtenerPorId(int id)
+        {
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
+
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
+
+                // Definir variable para almacenar el query
+                SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @id", conexion);
+                comando.Parameters.AddWithValue("@id", id);
+
+                // Crear un objeto SqlDataReader
+                SqlDataReader lector = comando.ExecuteReader();
+
+                // Si encuentra un registro
+                if (lector.Read())
+                {
+                    // Crear y devolver un objeto de tipo Videojuego
+                    Videojuego videojuego = new()
+                    {
+                        codVideojuego = lector["codVideojuego"].ToString(),
+                        titulo = lector["titulo"].ToString(),
+                        genero = lector["genero"].ToString(),
+                        plataforma = lector["plataforma"].ToString(),
+                        fechaLanzamiento = (DateTime)lector["fechaLanzamiento"],
+                        desarrollador = lector["desarrollador"].ToString(),
+                        publisher = lector["publisher"].ToString(),
+                        precio = (decimal)lector["precio"],
+                        descripcion = lector["descripcion"].ToString()
+                    };
+
+                    // Cerrar la conexión
+                    conexion.Close();
+
+                    return videojuego;
+                }
+
+                // Cerrar la conexión si no encuentra registro
+                conexion.Close();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Control de errores
+                string error = ex.Message;
+                return null;
+            }
+        }
+
+        // Método para eliminar un Videojuego por su código
+        public int Eliminar(int id)
+        {
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
+
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
+
+                // Definir variable para almacenar el query
+                SqlCommand comando = new($"delete from Videojuegos where codVideojuego = @id", conexion);
+                comando.Parameters.AddWithValue("@id", id);
+
+                // Ejecutar instrucción SQL
+                int eliminado = comando.ExecuteNonQuery();
+
+                // Cerrar la conexión
+                conexion.Close();
+
+                // Devolvemos el número de registros eliminados
+                return eliminado;
+            }
+            catch (Exception ex)
+            {
+                // Control de errores
+                string error = ex.Message;
+                return 0;
+            }
+        }
     }
 }
+
+
