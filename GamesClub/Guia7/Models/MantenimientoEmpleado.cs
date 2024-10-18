@@ -14,26 +14,7 @@ namespace GamesClub.Models
         // Definir variable para establecer la conexión a base de datos
         private SqlConnection? conexion;
 
-        public int EmpleadoSeleccionado { get; set; } // Empleado seleccionado en el formulario
-        public int TipoEmpleadoSeleccionado { get; set; } // Tipo de empleado seleccionado
-        public List<SelectListItem> TiposEmpleado { get; set; } // Lista de tipos de empleado
 
-        // Método para obtener las opciones de tipos de empleado
-        public string GetTiposEmpleadoOption()
-        {
-            var sb = new StringBuilder();
-
-            if (TiposEmpleado != null)
-            {
-                foreach (var tipo in TiposEmpleado)
-                {
-                    var selected = tipo.Value == TipoEmpleadoSeleccionado.ToString() ? "selected" : "";
-                    sb.Append($"<option value='{tipo.Value}' {selected}>{tipo.Text}</option>");
-                }
-            }
-
-            return sb.ToString();
-        }
 
         // Método para listar todos los registros de la tabla "Empleado"
         public bool DuiExiste(string dui)
