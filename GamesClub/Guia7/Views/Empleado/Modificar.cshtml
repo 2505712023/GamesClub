@@ -1,0 +1,91 @@
+﻿@model GamesClub.Models.Empleado
+@{
+    ViewData["Title"] = "Modificar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+    <div class="card-header">
+        Modificar empleado
+    </div>
+    <div class="card-body">
+        <form asp-action="Modificar" asp-controller="Empleado" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label asp-for="codEmpleado" class="form-label"></label>
+                <input asp-for="codEmpleado" type="text" class="form-control" >
+
+            </div>
+            <div class="mb-3">
+                <label for="idTipoEmpleado" class="form-label">Tipo de Empleado</label>
+                <select class="form-control" id="idTipoEmpleado" name="idTipoEmpleado"  required>
+                    <option value="">Selecciona un tipo</option>
+                    @if (ViewBag.TipoEmpleados != null)
+                    {
+                        foreach (var tipoEmpleado in (List<TipoEmpleado>)ViewBag.TipoEmpleados)
+                        {
+                            <option value="@tipoEmpleado.IdTipoEmpleado">@tipoEmpleado.Descripcion</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Nombres" class="form-label"></label>
+                <input asp-for="Nombres" type="text" class="form-control">
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Apellidos" class="form-label"></label>
+                <input asp-for="Apellidos" type="text" class="form-control">
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Dui" class="form-label"></label>
+                <input asp-for="Dui" type="text" class="form-control">
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Estado" class="form-label"></label>
+                <select asp-for="Estado" class="form-control" required>
+                    <option value="" disabled="" selected="">Seleccionar estado</option>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Imagen" class="form-label">Cargar Imagen</label>
+                <input asp-for="Imagen" type="file" class="form-control" accept="image/*">
+                <span asp-validation-for="Imagen" class="text-danger"></span> <!-- Para mostrar errores de validación -->
+            </div>
+            <div class="mb-3">
+                <label asp-for="Usuario" class="form-label"></label>
+                <input asp-for="Usuario" type="text" class="form-control">
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="Clave" class="form-label"></label>
+                <input asp-for="Clave" type="password" class="form-control">
+
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a asp-action="Index" asp-controller="Home" class="btn btn-warning">Volver a la lista</a>
+        </form>
+
+    </div>
+
+
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Utiliza Json.Encode para evitar problemas de codificación
+            var errorMessage = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]));
+            if (errorMessage) {
+                alert(errorMessage); // Muestra el mensaje de error en una ventana emergente
+            }
+        });
+    </script>
+}
