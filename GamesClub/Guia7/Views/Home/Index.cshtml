@@ -58,12 +58,9 @@
         </div>
     </div>
 </div>
-
-@{
-    if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger" role="alert">
-            @TempData["ErrorMessage"]
-        </div>
-    }
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        alert('@Html.Raw(TempData["ErrorMessage"])');
+    </script>
 }

@@ -12,6 +12,28 @@ namespace Guia7.Models
         private SqlConnection? conexion;
         DataTable Registro = new DataTable();
         // Método para agregar un tipo de empleados
+
+
+        public bool IdExiste(string idTEmpleado)
+        {
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new SqlConnection(conex.getCadConexion()))
+            {
+                conexion.Open();
+                SqlCommand comando = new SqlCommand("SELECT COUNT(*) FROM TipoEmpleado WHERE IdTipoEmpleado = @idTipoEmpleado", conexion);
+                comando.Parameters.AddWithValue("@idTipoEmpleado", idTEmpleado);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+
+
+
+
+
+
+
         public int Ingresar(TipoEmpleado tipoEmpleado)
         {
             try
@@ -224,8 +246,9 @@ namespace Guia7.Models
                 return 0;
             }
         }
-        public int Borrar(string IdTipoEmpleado)
+        public int Borrar(string IdTipoEmpleado, out string errorMessage)
         {
+            errorMessage = "";
             try
             {
                 // Crear objeto de la clase conexión
@@ -236,7 +259,7 @@ namespace Guia7.Models
                 conexion.Open();
 
                 // Definir variable para almacenar el query
-                SqlCommand comando = new("delete from TipoEmpleado where IdTipoEmpleado = @idTipoEmpleado", conexion); //consulta de delete
+                SqlCommand comando = new("delete from TipoEmpleado where IdTipoEmpleado = @idTipoEmpleado", conexion);
                 comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
                 comando.Parameters["@idTipoEmpleado"].Value = IdTipoEmpleado;
 
@@ -245,11 +268,21 @@ namespace Guia7.Models
                 conexion.Close();
                 return i;
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
+                // Verificar si la excepción está relacionada con una violación de clave foránea
+                if (ex.Number == 547) // Error de restricción de clave foránea en SQL Server
+                {
+                    errorMessage = "No se puede eliminar este registro porque está siendo utilizado en la tabla Empleado.";
+                }
+                else
+                {
+                    errorMessage = "Ocurrió un error al intentar eliminar el registro.";
+                }
+
                 return 0;
             }
-
         }
+
     }
 }

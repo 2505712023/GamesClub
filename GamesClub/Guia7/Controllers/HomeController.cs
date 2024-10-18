@@ -1,3 +1,4 @@
+using GamesClub.Models;
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -40,10 +41,21 @@ namespace Guia7.Controllers
         [HttpPost]
         public IActionResult Agregar(IFormCollection collection)
         {
-            //verifica si hay errores
-            if (ModelState.IsValid == false)
+            MantenimientoTipoEmpleado mTEmpleado = new();
+            if (mTEmpleado.IdExiste(collection["idTipoEmpleado"]))
             {
-                return View();
+                TempData["ErrorMessage"] = "El Código de Tipo Empleado ya existe";
+                return View(); // Regresa a la misma vista
+            }
+
+
+            //verifica si hay errores
+            if (!ModelState.IsValid)
+            {
+                // Verifica si el idTipoEmpleado ya existe
+               
+
+                return View(); // Si hay otros errores de validación
             }
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
@@ -118,9 +130,17 @@ namespace Guia7.Controllers
         public IActionResult Eliminar(String IdTipoEmpleado)
         {
             MantenimientoTipoEmpleado MTipoEmp = new MantenimientoTipoEmpleado();
-            MTipoEmp.Borrar(IdTipoEmpleado);
+            string errorMessage;
+            int resultado = MTipoEmp.Borrar(IdTipoEmpleado, out errorMessage);
+
+            if (resultado == 0 && !string.IsNullOrEmpty(errorMessage))
+            {
+                // Si hubo un error, pasar el mensaje de error a la vista
+                TempData["ErrorMessage"] = errorMessage;
+            }
 
             return RedirectToAction("Index");
         }
+
     }
 }

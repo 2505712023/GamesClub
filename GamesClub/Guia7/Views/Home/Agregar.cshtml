@@ -37,3 +37,10 @@
         </form>
     </div>
 </div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        alert('@Html.Raw(TempData["ErrorMessage"])');
+    </script>
+}
