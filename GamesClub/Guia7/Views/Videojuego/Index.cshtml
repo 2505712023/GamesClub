@@ -1,0 +1,53 @@
+﻿@using GamesClub.Models
+@* Indicar el modelo asociado a la página *@
+@model IEnumerable<Videojuego>
+@{
+    ViewData["Title"] = "Videojuegos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link href="~/css/videojuego.css" rel="stylesheet" />
+}
+
+<h2 style="color: darkorange">Listado de Videojuegos</h2>
+<table class="table table-bordered table-striped" style="width: 1800px; padding: 0px">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Título</th>
+            <th>Género</th>
+            <th>Plataforma</th>
+            <th>Fecha Lanzamiento</th>
+            <th>Desarrollador</th>
+            <th>Publisher</th>
+            <th>Precio</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Usamos foreach para recorrer la lista recibida como parámetro *@
+        @foreach (var videojuego in Model)
+        {
+            <tr>
+                <td>@videojuego.codVideojuego</td>
+                <td>@videojuego.titulo</td>
+                <td>@videojuego.genero</td>
+                <td>@videojuego.plataforma</td>
+                <td>@(videojuego.fechaLanzamiento.ToString("dd/MM/yyyy"))</td>
+                <td>@videojuego.desarrollador</td>
+                <td>@videojuego.publisher</td>
+                <td>@(videojuego.precio == 0 ? "Gratis" : videojuego.precio.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US")))</td>
+                <td>@videojuego.descripcion</td>
+
+                @* Columna de mantenimiento *@
+                <td>
+                    <a class="btn btn-primary btn-sm" asp-action="Modificar" asp-controller="Videojuego" asp-route-IdTipoEmpleado="@videojuego.codVideojuego">Modificar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-controller="Videojuego" asp-route-IdTipoEmpleado="@videojuego.codVideojuego">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <a class="btn btn-success btn-sm" asp-action="Agregar" asp-controller="Videojuego">Crear Nuevo</a>
+</table>
