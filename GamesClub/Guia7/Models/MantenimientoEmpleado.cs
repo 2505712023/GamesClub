@@ -1,16 +1,40 @@
 ﻿//Agregamos namespaces
 using Guia7.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
-
+using System.Text;
 namespace GamesClub.Models
 {
+
     public class MantenimientoEmpleado
     {
         // Definir variable para establecer la conexión a base de datos
         private SqlConnection? conexion;
-       
+
+        public int EmpleadoSeleccionado { get; set; } // Empleado seleccionado en el formulario
+        public int TipoEmpleadoSeleccionado { get; set; } // Tipo de empleado seleccionado
+        public List<SelectListItem> TiposEmpleado { get; set; } // Lista de tipos de empleado
+
+        // Método para obtener las opciones de tipos de empleado
+        public string GetTiposEmpleadoOption()
+        {
+            var sb = new StringBuilder();
+
+            if (TiposEmpleado != null)
+            {
+                foreach (var tipo in TiposEmpleado)
+                {
+                    var selected = tipo.Value == TipoEmpleadoSeleccionado.ToString() ? "selected" : "";
+                    sb.Append($"<option value='{tipo.Value}' {selected}>{tipo.Text}</option>");
+                }
+            }
+
+            return sb.ToString();
+        }
+
         // Método para listar todos los registros de la tabla "Empleado"
         public bool DuiExiste(string dui)
         {
@@ -49,6 +73,114 @@ namespace GamesClub.Models
 
                 int count = (int)comando.ExecuteScalar();
                 return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+        public Empleado Consultar(string codEmpleado) { 
+            
+            Conexion conex= new Conexion();
+            conexion =new SqlConnection(conex.getCadConexion());
+
+            conexion.Open();
+
+            //Definimos una variable para indicar las senticar sql a la tabla "empleado"
+            SqlCommand comando = new SqlCommand("SELECT codEmpleado,IdTipoEmpleado,Nombres,Apellidos,Dui,Estado,Imagen,Usuario,Clave FROM Empleado where codEmpleado=@codEmpleado",conexion);
+
+            //definimos los tipo y valors de los parametros
+            comando.Parameters.Add("@codEmpleado",SqlDbType.VarChar);
+            comando.Parameters["@codEmpleado"].Value = codEmpleado;
+
+            SqlDataReader Registro=comando.ExecuteReader();
+            Empleado empleado = new Empleado();
+
+            if (Registro.Read())
+            {
+                //asignan valores a los atributos del objeto de tipo Empleado
+                empleado.codEmpleado = Registro["codEmpleado"].ToString();
+                empleado.IdTipoEmpleado = Registro["IdTipoEmpleado"].ToString();
+                empleado.Nombres = Registro["NOMBRES"].ToString();
+                empleado.Apellidos = Registro["APELLIDOS"].ToString();
+                empleado.Dui = Registro["dui"].ToString();
+                empleado.Estado = (bool)Registro["Estado"];
+                empleado.Imagen = Registro["Imagen"].ToString();
+                empleado.Usuario = Registro["Usuario"].ToString();
+
+                
+
+            }
+            conexion.Close();
+            return empleado;
+
+        }
+
+        public int Modificar(Empleado empleado)
+        {
+
+
+
+
+            try
+            {
+                // Verificar campos requeridos
+                if (string.IsNullOrEmpty(empleado.codEmpleado) ||
+                    string.IsNullOrEmpty(empleado.IdTipoEmpleado) ||
+                    string.IsNullOrEmpty(empleado.Nombres) ||
+                    string.IsNullOrEmpty(empleado.Apellidos) ||
+                    string.IsNullOrEmpty(empleado.Dui) ||
+                    empleado.Estado == null ||
+                    string.IsNullOrEmpty(empleado.Imagen) ||
+                    string.IsNullOrEmpty(empleado.Usuario) ||
+                    string.IsNullOrEmpty(empleado.Clave))
+                {
+                    return -1; // Retorna -1 si hay campos requeridos vacíos
+                }
+                //crear objeto de la clase conexión
+                Conexion conex = new();
+                //definir la conexipin a la BD
+                conexion = new(conex.getCadConexion());
+                //abrir la conexión
+                conexion.Open();
+
+                //Definir variable para almacenar el query
+                SqlCommand comando = new($"Update Empleado set codEmpleado=@codEmpleado, IdTipoEmpleado=@idTipoEmpleado, Nombres=@nombres, Apellidos=@apellidos,Dui=@dui,Estado=@estado,Imagen=@imagen,Usuario=@usuario,Clave=@clave) where codEmpleado=@codEmpleado ", conexion);
+                comando.Parameters.Add("@codEmpleado", SqlDbType.VarChar);
+                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
+                comando.Parameters.Add("@nombres", SqlDbType.VarChar);
+                comando.Parameters.Add("@apellidos", SqlDbType.VarChar);
+                comando.Parameters.Add("@dui", SqlDbType.VarChar);
+                comando.Parameters.Add("@estado", SqlDbType.Bit);
+                comando.Parameters.Add("@imagen", SqlDbType.VarChar);
+                comando.Parameters.Add("@usuario", SqlDbType.VarChar);
+                comando.Parameters.Add("@clave", SqlDbType.VarChar);
+
+                //Pasar los datos digitrados pó el usuario a los parametros de la instrición SQL
+
+                comando.Parameters["@codEmpleado"].Value = empleado.codEmpleado;
+                comando.Parameters["@idTipoEmpleado"].Value = empleado.IdTipoEmpleado;
+                comando.Parameters["@nombres"].Value = empleado.Nombres;
+                comando.Parameters["@apellidos"].Value = empleado.Apellidos;
+                comando.Parameters["@dui"].Value = empleado.Dui;
+                comando.Parameters["@estado"].Value = empleado.Estado;
+                comando.Parameters["@imagen"].Value = empleado.Imagen;
+                comando.Parameters["@usuario"].Value = empleado.Usuario;
+                comando.Parameters["@clave"].Value = empleado.Clave;
+
+
+
+
+                // Ejecutar instrucción SQL
+                int ingresado = comando.ExecuteNonQuery();
+                conexion.Close();
+                // Devolvemos el numero de registros ingresados a la base
+                return ingresado;
+
+
+            }
+            catch (Exception ex)
+            {
+
+                // Control de errores
+                string error = ex.Message;
+                return 0;
             }
         }
 
