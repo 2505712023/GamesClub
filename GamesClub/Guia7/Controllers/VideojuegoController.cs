@@ -2,6 +2,7 @@
 using Guia7.Controllers;
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace GamesClub.Controllers
 {
@@ -46,7 +47,7 @@ namespace GamesClub.Controllers
                 fechaLanzamiento = Convert.ToDateTime(collection["fechaLanzamiento"]),
                 desarrollador = collection["desarrollador"].ToString(),
                 publisher = collection["publisher"].ToString(),
-                precio = Convert.ToDecimal(collection["precio"].ToString().Replace("$","")),
+                precio = Convert.ToDecimal(collection["precio"].ToString().Replace("$", "")),
                 descripcion = collection["descripcion"].ToString()
             };
 
@@ -56,5 +57,47 @@ namespace GamesClub.Controllers
             // Llamar la acción "Index"
             return RedirectToAction("Index");
         }
+
+        // Acción GET para mostrar la página de confirmación de eliminación
+        public IActionResult Eliminar(int id)
+        {
+            // Crear objeto de la clase MantenimientoVideojuego
+            MantenimientoVideojuego MVideojuego = new();
+
+            // Obtener el videojuego por su id
+            Videojuego videojuego = MVideojuego.ObtenerPorId(id);
+
+            // Verificar si el videojuego existe
+            if (videojuego == null)
+            {
+                return NotFound(); // Si no se encuentra, retornar 404
+            }
+
+            return View(videojuego); // Mostrar vista de confirmación
+        }
+
+        // Acción POST para confirmar y realizar la eliminación
+        [HttpPost, ActionName("Eliminar")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ConfirmarEliminacion(int id)
+        {
+            // Crear objeto de la clase MantenimientoVideojuego
+            MantenimientoVideojuego MVideojuego = new();
+
+            // Obtener el videojuego por su id
+            Videojuego videojuego = MVideojuego.ObtenerPorId(id);
+
+            if (videojuego == null)
+            {
+                return NotFound(); // Si no se encuentra, retornar 404
+            }
+
+            // Llamar al método para eliminar el videojuego
+            MVideojuego.Eliminar(id);
+
+            // Redirigir a la página principal después de eliminar
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
+
