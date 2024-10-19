@@ -1,6 +1,7 @@
 ﻿using GamesClub.Models;
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
 
@@ -20,63 +21,50 @@ namespace GamesClub.Controllers
             return View(mEmpleado.ListarTodos());
         }
 
-        public IActionResult Modificar(string CodEmpleado) 
+        public IActionResult Modificar(string codEmpleado)
         {
             MantenimientoEmpleado mEmpleado = new MantenimientoEmpleado();
 
-            Empleado empleado = mEmpleado.Consultar(CodEmpleado);
-            
+            // Consultar los datos del empleado
+            Empleado empleado = mEmpleado.Consultar(codEmpleado);
 
+            // Obtener lista de tipos de empleados
+            List<TipoEmpleado> tiposEmpleado = mEmpleado.listaTEmpleado();
 
+            // Crear ViewBag para pasar la lista de tipos de empleado
+            ViewBag.TiposEmpleado = tiposEmpleado.Select(te => new { Value = te.IdTipoEmpleado, Text = te.Descripcion }).ToList();
+
+            // Retornar vista con los datos del empleado
             return View(empleado);
-        
         }
+
         [HttpPost]
 
-        public IActionResult Modificar(IFormCollection collection)  { 
-            MantenimientoEmpleado MEmp =new MantenimientoEmpleado();
-            Empleado emp=new Empleado();
-            {
-                emp.codEmpleado = collection["codEmpleado"].ToString();
-                emp.IdTipoEmpleado = collection["idTipoEmpleado"].ToString();
-                emp.Nombres = collection["nombres"].ToString();
-                emp.Apellidos = collection["apellidos"].ToString();
-                emp.Dui = collection["dui"].ToString();
-                emp.Estado = !string.IsNullOrEmpty(collection["estado"]) && bool.Parse(collection["estado"]);
-                emp.Usuario = collection["usuario"].ToString();
-                emp.Clave = collection["clave"].ToString();
-
-
-            }
-            MEmp.Modificar(emp);
-            return View("Index"); 
-        
-        }
-        /*public IActionResult Modificar(IFormCollection collection)
+        [HttpPost]
+        public IActionResult Modificar(IFormCollection collection)
         {
             MantenimientoEmpleado mEmpleado = new();
             ViewBag.TipoEmpleados = mEmpleado.listaTEmpleado();
 
             if (ModelState.IsValid)
             {
-                if (mEmpleado.CodExiste(collection["codEmpleado"]))
-                {
-                    TempData["ErrorMessage"] = "El Código de Empleado ya existe";
-                    return View();
-                }
-                if (mEmpleado.DuiExiste(collection["dui"]))
-                {
-                    TempData["ErrorMessage"] = "El DUI ya existe";
-                    return View();
-                }
-                if (mEmpleado.UsuarioExiste(collection["usuario"]))
-                {
-                    TempData["ErrorMessage"] = "El usuario de Empleado ya existe";
-                    return View();
-                }
+               
 
-                Empleado emp = new Empleado();
-                var imagenFile = collection.Files["imagen"];
+
+                Empleado emp = new Empleado
+                {
+                    codEmpleado = collection["codEmpleado"].ToString(),
+                    IdTipoEmpleado = collection["idTipoEmpleado"].ToString(),
+                    Nombres = collection["nombres"].ToString(),
+                    Apellidos = collection["apellidos"].ToString(),
+                    Dui = collection["dui"].ToString(),
+                    Estado = !string.IsNullOrEmpty(collection["estado"]) && bool.Parse(collection["estado"]),
+                    Usuario = collection["usuario"].ToString(),
+                    Clave = collection["clave"].ToString(),
+                };
+
+                // Manejar la carga de la imagen
+                var imagenFile = collection.Files["imagen"]; // Asegúrate de que el nombre del campo sea correcto
                 if (imagenFile != null && imagenFile.Length > 0)
                 {
                     using (var memoryStream = new MemoryStream())
@@ -85,32 +73,28 @@ namespace GamesClub.Controllers
                         emp.Imagen = Convert.ToBase64String(memoryStream.ToArray()); // Almacena la imagen en Base64
                     }
                 }
-
-                // Asignar valores a la instancia emp
-                emp.codEmpleado = collection["codEmpleado"].ToString();
-                emp.IdTipoEmpleado = collection["idTipoEmpleado"].ToString();
-                emp.Nombres = collection["nombres"].ToString();
-                emp.Apellidos = collection["apellidos"].ToString();
-                emp.Dui = collection["dui"].ToString();
-                emp.Estado = !string.IsNullOrEmpty(collection["estado"]) && bool.Parse(collection["estado"]);
-                emp.Usuario = collection["usuario"].ToString();
-                emp.Clave = collection["clave"].ToString();
+                else
+                {
+                    // Si no se proporciona una nueva imagen, puedes mantener la imagen existente
+                    var empleadoExistente = mEmpleado.Consultar(emp.codEmpleado);
+                    emp.Imagen = empleadoExistente.Imagen; // Asigna la imagen existente
+                }
 
                 // Verificar campos requeridos
                 if (string.IsNullOrEmpty(emp.codEmpleado) ||
-                   string.IsNullOrEmpty(emp.IdTipoEmpleado) ||
+                    string.IsNullOrEmpty(emp.IdTipoEmpleado) ||
                     string.IsNullOrEmpty(emp.Nombres) ||
                     string.IsNullOrEmpty(emp.Apellidos) ||
                     string.IsNullOrEmpty(emp.Dui) ||
-                    string.IsNullOrEmpty(emp.Imagen) || // Aquí ahora se asegura que 'emp.Imagen' no es null
+                    string.IsNullOrEmpty(emp.Imagen) || // Aquí se asegura que 'emp.Imagen' no es null
                     string.IsNullOrEmpty(emp.Usuario) ||
                     string.IsNullOrEmpty(emp.Clave))
                 {
                     TempData["ErrorMessage"] = "Todos los campos son requeridos.";
                     return View(); // Regresar a la vista con el mensaje de error
                 }
-               
-                int resultado = mEmpleado.Ingresar(emp);
+
+                int resultado = mEmpleado.Modificar(emp);
 
                 if (resultado <= 0)
                 {
@@ -121,12 +105,11 @@ namespace GamesClub.Controllers
             }
             else
             {
-                // En caso de error, mostrar mensaje o volver a la vista de agregar
+                // En caso de error, mostrar mensaje o volver a la vista de modificar
                 ViewBag.ErrorMessage = "Error al guardar los datos.";
                 return View();
             }
-        }*/
-        /*Acció  que tiene por objeto mostrar la vista con un formulario HTML que permita ingresar los datos deun tipo de empleado*/
+        }
 
 
         public IActionResult Agregar()

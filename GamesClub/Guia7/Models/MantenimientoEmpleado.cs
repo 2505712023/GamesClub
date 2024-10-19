@@ -78,14 +78,14 @@ namespace GamesClub.Models
                 //asignan valores a los atributos del objeto de tipo Empleado
                 empleado.codEmpleado = Registro["codEmpleado"].ToString();
                 empleado.IdTipoEmpleado = Registro["IdTipoEmpleado"].ToString();
-                empleado.Nombres = Registro["NOMBRES"].ToString();
-                empleado.Apellidos = Registro["APELLIDOS"].ToString();
+                empleado.Nombres = Registro["nombres"].ToString();
+                empleado.Apellidos = Registro["apellidos"].ToString();
                 empleado.Dui = Registro["dui"].ToString();
-                empleado.Estado = (bool)Registro["Estado"];
-                empleado.Imagen = Registro["Imagen"].ToString();
-                empleado.Usuario = Registro["Usuario"].ToString();
+                empleado.Estado = (bool)Registro["estado"];
+                empleado.Imagen = Registro["imagen"].ToString();
+                empleado.Usuario = Registro["usuario"].ToString();
+                empleado.Clave = Registro["clave"].ToString();
 
-                
 
             }
             conexion.Close();
@@ -98,64 +98,68 @@ namespace GamesClub.Models
             try
             {
                 // Verificar campos requeridos
-               /* if (string.IsNullOrEmpty(empleado.codEmpleado) ||
+                if (string.IsNullOrEmpty(empleado.codEmpleado) ||
                     string.IsNullOrEmpty(empleado.IdTipoEmpleado) ||
                     string.IsNullOrEmpty(empleado.Nombres) ||
                     string.IsNullOrEmpty(empleado.Apellidos) ||
                     string.IsNullOrEmpty(empleado.Dui) ||
                     empleado.Estado == null ||
-                    string.IsNullOrEmpty(empleado.Imagen) ||
                     string.IsNullOrEmpty(empleado.Usuario) ||
                     string.IsNullOrEmpty(empleado.Clave))
                 {
                     return -1; // Retorna -1 si hay campos requeridos vacíos
-                }*/
+                }
 
-                //crear objeto de la clase conexión
-                Conexion conex = new();
-                //definir la conexipin a la BD
-                conexion = new(conex.getCadConexion());
-                //abrir la conexión
+                // Crear objeto de la clase conexión
+                Conexion conex = new Conexion();
+                // Definir la conexión a la BD
+                conexion = new SqlConnection(conex.getCadConexion());
+                // Abrir la conexión
                 conexion.Open();
 
-                //Definir variable para almacenar el query
-                SqlCommand comando = new($"Update Empleado set codEmpleado=@codEmpleado, IdTipoEmpleado=@idTipoEmpleado, Nombres=@nombres, Apellidos=@apellidos,Dui=@dui,Estado=@estado,Imagen=@imagen,Usuario=@usuario,Clave=@clave) where codEmpleado=@codEmpleado ", conexion);
-                comando.Parameters.Add("@codEmpleado", SqlDbType.VarChar);
-                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
-                comando.Parameters.Add("@nombres", SqlDbType.VarChar);
-                comando.Parameters.Add("@apellidos", SqlDbType.VarChar);
-                comando.Parameters.Add("@dui", SqlDbType.VarChar);
-                comando.Parameters.Add("@estado", SqlDbType.Bit);
+                // Definir variable para almacenar el query de actualización
+                SqlCommand comando = new SqlCommand($@"
+            UPDATE Empleado 
+            SET IdTipoEmpleado = @idTipoEmpleado, 
+                Nombres = @nombres, 
+                Apellidos = @apellidos, 
+                Dui = @dui, 
+                Estado = @estado, 
+                Imagen = @imagen, 
+                Usuario = @usuario, 
+                Clave = @clave 
+            WHERE codEmpleado = @codEmpleado", conexion);
+
+                // Agregar los parámetros
+                comando.Parameters.Add("@codEmpleado", SqlDbType.VarChar).Value = empleado.codEmpleado;
+                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar).Value = empleado.IdTipoEmpleado;
+                comando.Parameters.Add("@nombres", SqlDbType.VarChar).Value = empleado.Nombres;
+                comando.Parameters.Add("@apellidos", SqlDbType.VarChar).Value = empleado.Apellidos;
+                comando.Parameters.Add("@dui", SqlDbType.VarChar).Value = empleado.Dui;
+                comando.Parameters.Add("@estado", SqlDbType.Bit).Value = empleado.Estado;
+                comando.Parameters.Add("@usuario", SqlDbType.VarChar).Value = empleado.Usuario;
+                comando.Parameters.Add("@clave", SqlDbType.VarChar).Value = empleado.Clave;
+
+                // Manejar opcionalmente el campo "Imagen"
                 comando.Parameters.Add("@imagen", SqlDbType.VarChar);
-                comando.Parameters.Add("@usuario", SqlDbType.VarChar);
-                comando.Parameters.Add("@clave", SqlDbType.VarChar);
-
-                //Pasar los datos digitrados pó el usuario a los parametros de la instrición SQL
-
-                comando.Parameters["@codEmpleado"].Value = empleado.codEmpleado;
-                comando.Parameters["@idTipoEmpleado"].Value = empleado.IdTipoEmpleado;
-                comando.Parameters["@nombres"].Value = empleado.Nombres;
-                comando.Parameters["@apellidos"].Value = empleado.Apellidos;
-                comando.Parameters["@dui"].Value = empleado.Dui;
-                comando.Parameters["@estado"].Value = empleado.Estado;
-                comando.Parameters["@imagen"].Value = empleado.Imagen;
-                comando.Parameters["@usuario"].Value = empleado.Usuario;
-                comando.Parameters["@clave"].Value = empleado.Clave;
-
-
-
+                if (!string.IsNullOrEmpty(empleado.Imagen))
+                {
+                    comando.Parameters["@imagen"].Value = empleado.Imagen; // Si tiene valor, lo establece
+                }
+                else
+                {
+                    comando.Parameters["@imagen"].Value = DBNull.Value; // Si es nulo o vacío, se pasa DBNull
+                }
 
                 // Ejecutar instrucción SQL
-                int ingresado = comando.ExecuteNonQuery();
+                int actualizado = comando.ExecuteNonQuery();
                 conexion.Close();
-                // Devolvemos el numero de registros ingresados a la base
-                return ingresado;
 
-
+                // Devolver el número de registros actualizados
+                return actualizado;
             }
             catch (Exception ex)
             {
-
                 // Control de errores
                 string error = ex.Message;
                 return 0;
