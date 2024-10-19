@@ -56,3 +56,15 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Utiliza Json.Encode para evitar problemas de codificación
+            var errorMessage = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]));
+            if (errorMessage) {
+                alert(errorMessage); // Muestra el mensaje de error en una ventana emergente
+            }
+        });
+    </script>
+}

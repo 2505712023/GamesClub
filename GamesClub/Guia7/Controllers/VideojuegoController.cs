@@ -35,26 +35,57 @@ namespace GamesClub.Controllers
         {
             // Crear objeto de la clase MantenimientoVideojuego
             MantenimientoVideojuego MVideojuego = new();
+            ViewBag.Videojuegos = MVideojuego.ListarTodos();
 
-            // Crear objeto de tipo Videojuego
-            Videojuego videojuego = new()
+            if (ModelState.IsValid)
             {
-                codVideojuego = collection["codVideojuego"].ToString(),
-                titulo = collection["titulo"].ToString(),
-                genero = collection["genero"].ToString(),
-                plataforma = collection["plataforma"].ToString(),
-                fechaLanzamiento = Convert.ToDateTime(collection["fechaLanzamiento"]),
-                desarrollador = collection["desarrollador"].ToString(),
-                publisher = collection["publisher"].ToString(),
-                precio = Convert.ToDecimal(collection["precio"].ToString().Replace("$","")),
-                descripcion = collection["descripcion"].ToString()
-            };
+                if (MVideojuego.CodExiste(collection["codVideojuego"]))
+                {
+                    TempData["ErrorMessage"] = "El código de Videojuego ya existe";
+                    return View();
+                }
 
-            // Llamar al método Ingresar de la clase "MantenimientoVideojuego"
-            MVideojuego.Ingresar(videojuego);
+                // Verificar campos requeridos
+                if (string.IsNullOrEmpty(collection["codVideojuego"].ToString()) ||
+                    string.IsNullOrEmpty(collection["titulo"].ToString()) ||
+                    string.IsNullOrEmpty(collection["genero"].ToString()) ||
+                    string.IsNullOrEmpty(collection["plataforma"].ToString()) ||
+                    string.IsNullOrEmpty(collection["fechaLanzamiento"].ToString()) ||
+                    string.IsNullOrEmpty(collection["desarrollador"].ToString()) ||
+                    string.IsNullOrEmpty(collection["publisher"].ToString()) ||
+                    string.IsNullOrEmpty(collection["precio"].ToString()) ||
+                    string.IsNullOrEmpty(collection["descripcion"].ToString()))
+                {
+                    TempData["ErrorMessage"] = "Todos los campos son requeridos.";
+                    return View(); // Regresar a la vista con el mensaje de error
+                }
 
-            // Llamar la acción "Index"
-            return RedirectToAction("Index");
+                // Crear objeto de tipo Videojuego
+                Videojuego videojuego = new()
+                {
+                    codVideojuego = collection["codVideojuego"].ToString(),
+                    titulo = collection["titulo"].ToString(),
+                    genero = collection["genero"].ToString(),
+                    plataforma = collection["plataforma"].ToString(),
+                    fechaLanzamiento = Convert.ToDateTime(collection["fechaLanzamiento"]),
+                    desarrollador = collection["desarrollador"].ToString(),
+                    publisher = collection["publisher"].ToString(),
+                    precio = Convert.ToDecimal(collection["precio"].ToString().Replace("$", "")),
+                    descripcion = collection["descripcion"].ToString()
+                };
+
+                // Llamar al método Ingresar de la clase "MantenimientoVideojuego"
+                MVideojuego.Ingresar(videojuego);
+
+                // Llamar la acción "Index"
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                // En caso de error, mostrar mensaje o volver a la vista de agregar
+                ViewBag.ErrorMessage = "Error al guardar los datos.";
+                return View();
+            }
         }
 
         public IActionResult Modificar(string IdTipoEmpleado)

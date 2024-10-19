@@ -38,7 +38,7 @@ namespace Guia7.Models
                 comando.Parameters.Add("@estado", SqlDbType.Bit);
 
                 // Pasar los datos digitados por el usuario a los parámetros
-                comando.Parameters["@idTipoEmpleado"].Value = tipoEmpleado.IdTipoEmpleado;
+                comando.Parameters["@idTipoEmpleado"].Value = tipoEmpleado.IdTipoEmpleado.Substring(0,5);
                 comando.Parameters["@descripcion"].Value = tipoEmpleado.Descripcion;
                 comando.Parameters["@estado"].Value = tipoEmpleado.Estado;
 

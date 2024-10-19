@@ -44,7 +44,7 @@ namespace Guia7.Controllers
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = Convert.ToBoolean(collection["estado"])
+                Estado = Convert.ToBoolean(collection["estado"][0])
             };
 
             // Llamar al método Ingresar de la clase "MantenimientoTipoEmpleado"
