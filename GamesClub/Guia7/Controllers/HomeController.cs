@@ -20,31 +20,31 @@ namespace Guia7.Controllers
 
         public void OnGet()
         {
-            // CÛdigo de lÛgica para OnGet
+            // C√≥digo de l√≥gica para OnGet
         }
         public IActionResult Index()
         {
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
 
-            // Llamar al mÈtodo "ListarTodos" y lo pasamos como par·metro a la vista
+            // Llamar al m√©todo "ListarTodos" y lo pasamos como par√°metro a la vista
             return View(MTipEmp.ListarTodos());
         }
 
-        // MÈtodo para crear un registro en la tabla TipoEmpleado
+        // M√©todo para crear un registro en la tabla TipoEmpleado
         public IActionResult Agregar()
         {
             return View();
         }
 
-        // AcciÛn que se ejecuta al dar clic en el botÛn "Crear Nuevo"
+        // Acci√≥n que se ejecuta al dar clic en el bot√≥n "Crear Nuevo"
         [HttpPost]
         public IActionResult Agregar(IFormCollection collection)
         {
             MantenimientoTipoEmpleado mTEmpleado = new();
             if (mTEmpleado.IdExiste(collection["idTipoEmpleado"]))
             {
-                TempData["ErrorMessage"] = "El CÛdigo de Tipo Empleado ya existe";
+                TempData["ErrorMessage"] = "El C√≥digo de Tipo Empleado ya existe";
                 return View(); // Regresa a la misma vista
             }
 
@@ -55,7 +55,7 @@ namespace Guia7.Controllers
                 // Verifica si el idTipoEmpleado ya existe
                
 
-                return View(); // Si hay otros errores de validaciÛn
+                return View(); // Si hay otros errores de validaci√≥n
             }
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
@@ -69,13 +69,13 @@ namespace Guia7.Controllers
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = bool.Parse(collection["estado"])
+                Estado = Convert.ToBoolean(collection["estado"][0])
             };
 
-            // Llamar al mÈtodo Ingresar de la clase "MantenimientoTipoEmpleado"
+            // Llamar al m√©todo Ingresar de la clase "MantenimientoTipoEmpleado"
             MTipEmp.Ingresar(newTipoEmpleado);
 
-            // Llamar la acciÛn "Index"
+            // Llamar la acci√≥n "Index"
             return RedirectToAction("Index");
         }
         public IActionResult Modificar(string IdTipoEmpleado)
@@ -91,8 +91,8 @@ namespace Guia7.Controllers
             }
             catch (Exception ex)
             {
-                ViewData["ErrorMessage"] = $"OcurriÛ un error al eliminar: {ex.Message}";
-                return View("Index");  // Volver a la misma p·gina
+                ViewData["ErrorMessage"] = $"Ocurri√≥ un error al eliminar: {ex.Message}";
+                return View("Index");  // Volver a la misma p√°gina
             }
         }
         public IActionResult Privacy()
@@ -120,13 +120,13 @@ namespace Guia7.Controllers
                 Estado = bool.Parse(collection["estado"])
             };
 
-            // Llamar al mÈtodo Ingresar de la clase "MantenimientoTipoEmpleado"
+            // Llamar al m√©todo Ingresar de la clase "MantenimientoTipoEmpleado"
             MTipEmp.Modificar(tipoEmp);
 
-            // Llamar la acciÛn "Index"
+            // Llamar la acci√≥n "Index"
             return RedirectToAction("Index");
         }
-        //AcciÛn que tiene por objetivo eliminar los datos de un alumno
+        //Acci√≥n que tiene por objetivo eliminar los datos de un alumno
         public IActionResult Eliminar(String IdTipoEmpleado)
         {
             MantenimientoTipoEmpleado MTipoEmp = new MantenimientoTipoEmpleado();
