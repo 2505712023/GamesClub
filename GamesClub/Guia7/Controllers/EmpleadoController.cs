@@ -9,11 +9,6 @@ namespace GamesClub.Controllers
 {
     public class EmpleadoController : Controller
     {
-
-
-
-
-
         public IActionResult Empleado()
         {
             MantenimientoEmpleado mEmpleado = new MantenimientoEmpleado();
@@ -34,7 +29,6 @@ namespace GamesClub.Controllers
             // Crear ViewBag para pasar la lista de tipos de empleado
             ViewBag.TiposEmpleado = tiposEmpleado.Select(te => new { Value = te.IdTipoEmpleado, Text = te.Descripcion }).ToList();
 
-            // Retornar vista con los datos del empleado
             return View(empleado);
         }
 
@@ -125,7 +119,6 @@ namespace GamesClub.Controllers
 
         // Acción que se ejecutará cuando se presione el botón de tipo submit, recibe como parámetros los datos cargador en el formulario
         [HttpPost]
-     
         public IActionResult Agregar(IFormCollection collection)
         {
             MantenimientoEmpleado mEmpleado = new();
@@ -199,6 +192,20 @@ namespace GamesClub.Controllers
                 ViewBag.ErrorMessage = "Error al guardar los datos.";
                 return View();
             }
+        }
+
+
+        public IActionResult Eliminar(String codEmpleado)
+        {
+            //Definimos un objeto de tipo "MantenimientoTipoEmpleado"
+            MantenimientoEmpleado MEmpleado = new MantenimientoEmpleado();
+
+            //Llamamos al método "Borrar"
+            MEmpleado.Borrar(codEmpleado);
+
+            //Invocamos acción "Index"
+
+            return RedirectToAction("Empleado");
         }
 
     }

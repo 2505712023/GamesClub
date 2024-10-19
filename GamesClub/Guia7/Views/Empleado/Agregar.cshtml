@@ -10,24 +10,23 @@
     </div>
     <div class="card-body">
         <form asp-action="Agregar" asp-controller="Empleado" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label asp-for="codEmpleado" class="form-label"></label>
-                <input asp-for="codEmpleado" type="text" class="form-control">
-              
+                <div class="mb-3">
+                    <label asp-for="codEmpleado" class="form-label"></label>
+                    <input asp-for="codEmpleado" type="text" class="form-control">
+                </div>
+                <div class="mb-3">
+                <label for="idTipoEmpleado" class="form-label">Tipo de Empleado</label>
+                <select class="form-control" id="idTipoEmpleado" name="idTipoEmpleado" required>
+                    <option value="">Selecciona un tipo</option>
+                    @if (ViewBag.TipoEmpleados != null)
+                    {
+                        foreach (var tipoEmpleado in (List<TipoEmpleado>)ViewBag.TipoEmpleados)
+                        {
+                            <option value="@tipoEmpleado.IdTipoEmpleado">@tipoEmpleado.Descripcion</option>
+                        }
+                    }
+                </select>
             </div>
-         <div class="mb-3">
-    <label for="idTipoEmpleado" class="form-label">Tipo de Empleado</label>
-    <select class="form-control" id="idTipoEmpleado" name="idTipoEmpleado" required>
-        <option value="">Selecciona un tipo</option>
-        @if (ViewBag.TipoEmpleados != null)
-        {
-            foreach (var tipoEmpleado in (List<TipoEmpleado>)ViewBag.TipoEmpleados)
-            {
-                <option value="@tipoEmpleado.IdTipoEmpleado">@tipoEmpleado.Descripcion</option>
-            }
-        }
-    </select>
-</div>
 
             <div class="mb-3">
                 <label asp-for="Nombres" class="form-label"></label>
@@ -71,14 +70,8 @@
             <button type="submit" class="btn btn-primary">Guardar</button>
             <a asp-action="Empleado" asp-controller="Empleado" class="btn btn-warning">Volver a la lista</a>
         </form>
-
     </div>
-
-
 </div>
-
-
-
 
 @section Scripts {
     <script>

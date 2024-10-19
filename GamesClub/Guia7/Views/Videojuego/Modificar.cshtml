@@ -1,22 +1,21 @@
 ﻿@using GamesClub.Models
-@* Indicar el modelo que va a utilizar *@
 @model Videojuego
 @{
-    ViewData["Title"] = "Agregar";
+    ViewData["Title"] = "Modificar";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Agregar</h1>
+<h1>Modificar</h1>
 
 <div class="card">
     <div class="card-header">
-        Crear Videojuego
+        Modificar Videojuego
     </div>
     <div class="card-body">
-        <form asp-action="Agregar" asp-controller="Videojuego" method="post">
+        <form asp-action="Modificar" asp-controller="Videojuego" method="post">
             <div class="mb-3">
                 <label class="form-label">Código</label>
-                <input asp-for="codVideojuego" type="text" class="form-control">
+                <input asp-for="codVideojuego" type="text" class="form-control" readonly>
             </div>
             <div class="mb-3">
                 <label class="form-label">Título</label>
@@ -56,15 +55,3 @@
         </form>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Utiliza Json.Encode para evitar problemas de codificación
-            var errorMessage = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]));
-            if (errorMessage) {
-                alert(errorMessage); // Muestra el mensaje de error en una ventana emergente
-            }
-        });
-    </script>
-}
