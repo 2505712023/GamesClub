@@ -189,6 +189,20 @@ namespace GamesClub.Controllers
             }
         }
 
+
+        public IActionResult Eliminar(String codEmpleado)
+        {
+            //Definimos un objeto de tipo "MantenimientoTipoEmpleado"
+            MantenimientoEmpleado MEmpleado = new MantenimientoEmpleado();
+
+            //Llamamos al método "Borrar"
+            MEmpleado.Borrar(codEmpleado);
+
+            //Invocamos acción "Index"
+
+            return RedirectToAction("Empleado");
+        }
+
     }
 
 }

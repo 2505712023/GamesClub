@@ -75,21 +75,22 @@ namespace GamesClub.Models
                 return count > 0; // Si el conteo es mayor a 0, significa que ya existe
             }
         }
-        public Empleado Consultar(string codEmpleado) { 
-            
-            Conexion conex= new Conexion();
-            conexion =new SqlConnection(conex.getCadConexion());
+        public Empleado Consultar(string codEmpleado)
+        {
+
+            Conexion conex = new Conexion();
+            conexion = new SqlConnection(conex.getCadConexion());
 
             conexion.Open();
 
             //Definimos una variable para indicar las senticar sql a la tabla "empleado"
-            SqlCommand comando = new SqlCommand("SELECT codEmpleado,IdTipoEmpleado,Nombres,Apellidos,Dui,Estado,Imagen,Usuario,Clave FROM Empleado where codEmpleado=@codEmpleado",conexion);
+            SqlCommand comando = new SqlCommand("SELECT codEmpleado,IdTipoEmpleado,Nombres,Apellidos,Dui,Estado,Imagen,Usuario,Clave FROM Empleado where codEmpleado=@codEmpleado", conexion);
 
             //definimos los tipo y valors de los parametros
-            comando.Parameters.Add("@codEmpleado",SqlDbType.VarChar);
+            comando.Parameters.Add("@codEmpleado", SqlDbType.VarChar);
             comando.Parameters["@codEmpleado"].Value = codEmpleado;
 
-            SqlDataReader Registro=comando.ExecuteReader();
+            SqlDataReader Registro = comando.ExecuteReader();
             Empleado empleado = new Empleado();
 
             if (Registro.Read())
@@ -104,7 +105,7 @@ namespace GamesClub.Models
                 empleado.Imagen = Registro["Imagen"].ToString();
                 empleado.Usuario = Registro["Usuario"].ToString();
 
-                
+
 
             }
             conexion.Close();
@@ -185,11 +186,12 @@ namespace GamesClub.Models
         }
 
 
-        public int Ingresar(Empleado empleado) {
-          
-            
-            
-           
+        public int Ingresar(Empleado empleado)
+        {
+
+
+
+
             try
             {
                 // Verificar campos requeridos
@@ -210,10 +212,10 @@ namespace GamesClub.Models
                 //definir la conexipin a la BD
                 conexion = new(conex.getCadConexion());
                 //abrir la conexión
-                 conexion.Open();
+                conexion.Open();
 
                 //Definir variable para almacenar el query
-                SqlCommand comando = new ($"insert into Empleado (codEmpleado, IdTipoEmpleado, Nombres, Apellidos,Dui,Estado,Imagen,Usuario,Clave) values(@codEmpleado,@idTipoEmpleado,@nombres,@apellidos,@dui,@estado,@imagen,@usuario,@clave)",  conexion);
+                SqlCommand comando = new($"insert into Empleado (codEmpleado, IdTipoEmpleado, Nombres, Apellidos,Dui,Estado,Imagen,Usuario,Clave) values(@codEmpleado,@idTipoEmpleado,@nombres,@apellidos,@dui,@estado,@imagen,@usuario,@clave)", conexion);
                 comando.Parameters.Add("@codEmpleado", SqlDbType.VarChar);
                 comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
                 comando.Parameters.Add("@nombres", SqlDbType.VarChar);
@@ -226,7 +228,7 @@ namespace GamesClub.Models
 
                 //Pasar los datos digitrados pó el usuario a los parametros de la instrición SQL
 
-                comando.Parameters["@codEmpleado"].Value=empleado.codEmpleado;
+                comando.Parameters["@codEmpleado"].Value = empleado.codEmpleado;
                 comando.Parameters["@idTipoEmpleado"].Value = empleado.IdTipoEmpleado;
                 comando.Parameters["@nombres"].Value = empleado.Nombres;
                 comando.Parameters["@apellidos"].Value = empleado.Apellidos;
@@ -235,12 +237,12 @@ namespace GamesClub.Models
                 comando.Parameters["@imagen"].Value = empleado.Imagen;
                 comando.Parameters["@usuario"].Value = empleado.Usuario;
                 comando.Parameters["@clave"].Value = empleado.Clave;
-               
+
 
 
 
                 // Ejecutar instrucción SQL
-                int ingresado= comando.ExecuteNonQuery();
+                int ingresado = comando.ExecuteNonQuery();
                 conexion.Close();
                 // Devolvemos el numero de registros ingresados a la base
                 return ingresado;
@@ -290,12 +292,13 @@ namespace GamesClub.Models
         }
 
 
-        public List<Empleado> ListarTodos() {
-        //Crear objeto de tipo "Conexion" para iniciar la conexión a la base de datos "GamesClub"
-        Conexion conex =new ();
+        public List<Empleado> ListarTodos()
+        {
+            //Crear objeto de tipo "Conexion" para iniciar la conexión a la base de datos "GamesClub"
+            Conexion conex = new();
 
             //Definir la conexión a la BD
-        List<Empleado> Empleado = new List<Empleado>();
+            List<Empleado> Empleado = new List<Empleado>();
 
             // Definir la conexión a la BD
             conexion = new(conex.getCadConexion());
@@ -304,10 +307,11 @@ namespace GamesClub.Models
 
             //Definimos una variable para indicar las sentencia SQL  a la tabla "Empleado"
             SqlCommand comando = new SqlCommand($"select codEmpleado, temp.Descripcion, Nombres,Apellidos, Dui, e.Estado,Imagen,Usuario,Clave from Empleado e inner join TipoEmpleado temp on e.IdTipoEmpleado= temp.IdTipoEmpleado", conexion);
-        //Dwfinir un objeto "DataReader" que almacenará los registros de la tabla "Empleado"
+            //Dwfinir un objeto "DataReader" que almacenará los registros de la tabla "Empleado"
             SqlDataReader leer = comando.ExecuteReader();
 
-            while (leer.Read()) {
+            while (leer.Read())
+            {
 
                 //Creamos un objeto de tipo "Empleado"
                 Empleado empleado = new Empleado()
@@ -316,23 +320,49 @@ namespace GamesClub.Models
                     codEmpleado = leer["codEmpleado"].ToString(),
                     IdTipoEmpleado = leer["Descripcion"].ToString(),
                     Nombres = leer["nombres"].ToString(),
-                    Apellidos= leer["apellidos"].ToString(),
+                    Apellidos = leer["apellidos"].ToString(),
                     Dui = leer["dui"].ToString(),
                     Estado = (bool)leer["estado"],
-                    Imagen= leer["imagen"].ToString(),
-                    Usuario= leer["usuario"].ToString(),
-                    Clave= leer["clave"].ToString()
+                    Imagen = leer["imagen"].ToString(),
+                    Usuario = leer["usuario"].ToString(),
+                    Clave = leer["clave"].ToString()
 
 
                 };
                 //Agregamos el registro a la lista
-                Empleado.Add(empleado); 
+                Empleado.Add(empleado);
             }
             //Cerrar conexión
-           conexion.Close();
+            conexion.Close();
 
             return Empleado;
         }
 
+        public int Borrar(string Empleado)
+        {
+
+           
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
+
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
+
+                // Definir variable para almacenar el query
+                SqlCommand comando = new($"delete from Empleado where codEmpleado = @codEmpleado", conexion); //consulta de delete
+                comando.Parameters.Add("@codEmpleado", SqlDbType.VarChar);
+
+                // Pasar los datos digitados por el usuario a los parámetros                
+                comando.Parameters["@codEmpleado"].Value = Empleado;
+
+                // Ejecutar instrucción SQL
+                int i = comando.ExecuteNonQuery();
+                conexion.Close();
+
+                return i;
+            
+           
+        }
     }
 }
