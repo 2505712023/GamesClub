@@ -12,6 +12,28 @@ namespace Guia7.Models
         private SqlConnection? conexion;
         DataTable Registro = new DataTable();
         // Método para agregar un tipo de empleados
+
+
+        public bool IdExiste(string idTEmpleado)
+        {
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new SqlConnection(conex.getCadConexion()))
+            {
+                conexion.Open();
+                SqlCommand comando = new SqlCommand("SELECT COUNT(*) FROM TipoEmpleado WHERE IdTipoEmpleado = @idTipoEmpleado", conexion);
+                comando.Parameters.AddWithValue("@idTipoEmpleado", idTEmpleado);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+
+
+
+
+
+
+
         public int Ingresar(TipoEmpleado tipoEmpleado)
         {
             try
@@ -20,7 +42,7 @@ namespace Guia7.Models
 
                 if (ValidaTipoEmpleado(tipoEmpleado.IdTipoEmpleado).Rows.Count > 0)
                 {
-                    throw new ArgumentOutOfRangeException("Ya existe un registro de Id Tipo empleado en la base de datos");
+                    return 0;
                 }
 
 
@@ -38,7 +60,7 @@ namespace Guia7.Models
                 comando.Parameters.Add("@estado", SqlDbType.Bit);
 
                 // Pasar los datos digitados por el usuario a los parámetros
-                comando.Parameters["@idTipoEmpleado"].Value = tipoEmpleado.IdTipoEmpleado;
+                comando.Parameters["@idTipoEmpleado"].Value = tipoEmpleado.IdTipoEmpleado.Substring(0,5);
                 comando.Parameters["@descripcion"].Value = tipoEmpleado.Descripcion;
                 comando.Parameters["@estado"].Value = tipoEmpleado.Estado;
 
@@ -127,34 +149,31 @@ namespace Guia7.Models
         public TipoEmpleado ObtenerTipoEmpleado(string id)
         {
             // Crear objeto de la clase conexión
-            Conexion conn = new();
+            Conexion conn = new Conexion();
             // Definir la conexión a la BD
-            conexion = new(conn.getCadConexion());
+            conexion = new SqlConnection(conn.getCadConexion());
             conexion.Open();
-            TipoEmpleado tipoEmpleado = null;
 
-            string query = "SELECT * FROM TipoEmpleado WHERE IdTipoEmpleado = @IdTipoEmpleado";
-            using (SqlCommand comando = new SqlCommand(query, conexion))
+
+            SqlCommand comando = new SqlCommand("SELECT * FROM TipoEmpleado WHERE IdTipoEmpleado = @IdTipoEmpleado",conexion);
+
+            comando.Parameters.Add("@IdTipoEmpleado", SqlDbType.VarChar);
+            comando.Parameters["@IdTipoEmpleado"].Value = id;
+
+            SqlDataReader Registros = comando.ExecuteReader();
+
+            TipoEmpleado tipoEmp = new TipoEmpleado();
+
+            if (Registros.Read())
             {
-                comando.Parameters.AddWithValue("@IdTipoEmpleado", id);
-
-                conexion.Open();
-                using (SqlDataReader reader = comando.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        tipoEmpleado = new TipoEmpleado
-                        {
-                            IdTipoEmpleado = reader["IdTipoEmpleado"].ToString(),
-                            Descripcion = reader["Descripcion"].ToString(),
-                            Estado = Convert.ToBoolean(reader["Estado"])
-                        };
-                    }
-                }
-                conexion.Close();
+                tipoEmp.IdTipoEmpleado = Registros["IdTipoEmpleado"].ToString();
+                tipoEmp.Descripcion = Registros["Descripcion"].ToString();
+                tipoEmp.Estado = (bool)Registros["Estado"];
             }
 
-            return tipoEmpleado;
+            conexion.Close();
+
+            return tipoEmp;
         }
 
         public TipoEmpleado llenaDatos(string IdTipoEmpleado)
@@ -183,15 +202,15 @@ namespace Guia7.Models
 
             return DaTipoEmpleado;
         }
-        public int Actualizar(TipoEmpleado tipoEmpleado)
+        public int Modificar(TipoEmpleado tipoEmpleado)
         {
             try
             {
                 //validacion para que no se repita el tipo de comprobante
 
-                if (ValidaTipoEmpleado(tipoEmpleado.IdTipoEmpleado).Rows.Count == 0)
+                if (ValidaTipoEmpleado(tipoEmpleado.IdTipoEmpleado).Rows.Count > 1)
                 {
-                    throw new ArgumentOutOfRangeException("No hay registro por actualizar");
+                    return 0;
                 }
 
 
@@ -204,7 +223,7 @@ namespace Guia7.Models
 
                 // Definir variable para almacenar el query
                 SqlCommand comando = new($"update TipoEmpleado set Descripcion = @descripcion, Estado = @estado where idTipoEmpleado = @idTipoEmpleado ", conexion);
-                comando.Parameters.Add("@idTIpoEmpleado", SqlDbType.VarChar);
+                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
                 comando.Parameters.Add("@descripcion", SqlDbType.VarChar);
                 comando.Parameters.Add("@estado", SqlDbType.Bit);
 
@@ -227,5 +246,43 @@ namespace Guia7.Models
                 return 0;
             }
         }
+        public int Borrar(string IdTipoEmpleado, out string errorMessage)
+        {
+            errorMessage = "";
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
+
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
+
+                // Definir variable para almacenar el query
+                SqlCommand comando = new("delete from TipoEmpleado where IdTipoEmpleado = @idTipoEmpleado", conexion);
+                comando.Parameters.Add("@idTipoEmpleado", SqlDbType.VarChar);
+                comando.Parameters["@idTipoEmpleado"].Value = IdTipoEmpleado;
+
+                // Ejecutar instrucción SQL
+                int i = comando.ExecuteNonQuery();
+                conexion.Close();
+                return i;
+            }
+            catch (SqlException ex)
+            {
+                // Verificar si la excepción está relacionada con una violación de clave foránea
+                if (ex.Number == 547) // Error de restricción de clave foránea en SQL Server
+                {
+                    errorMessage = "No se puede eliminar este registro porque está siendo utilizado en la tabla Empleado.";
+                }
+                else
+                {
+                    errorMessage = "Ocurrió un error al intentar eliminar el registro.";
+                }
+
+                return 0;
+            }
+        }
+
     }
 }

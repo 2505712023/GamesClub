@@ -13,22 +13,24 @@
     </div>
     <div class="card-body">
         <form asp-action="Modificar" asp-controller="Home" method="post">
-            <div class="mb-3">
-                <label class="form-label">Código</label>
-                <input asp-for="IdTipoEmpleado" type="text" class="form-control" readonly />
-            </div>
+            <input asp-for="IdTipoEmpleado" type="hidden" class="form-control" />
+
             <div class="mb-3">
                 <label class="form-label">Descripción</label>
                 <input asp-for="Descripcion" type="text" class="form-control">
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label>
-                    <input type="checkbox" asp-for="Estado" checked />
-                    Activo
-                </label>
+                <label asp-for="Estado"></label>
+                <select asp-for="Estado" class="form-control">
+                    <option value="" disabled="" selected="">Selecciona el estado</option>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+                <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary">Modificar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
             <a asp-action="Index" asp-controller="Home" class="btn btn-warning">Volver al listado</a>
         </form>
     </div>

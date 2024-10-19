@@ -70,7 +70,7 @@ namespace GamesClub.Models
             Conexion conn = new();
 
             // Definir una lista de tipo "Videojuegos"
-            // List<Videojuego> listaVideojuegos = new();
+            List<Videojuego> listaVideojuegos = new();
 
             // Definir la conexión a la BD
             conexion = new(conn.getCadConexion());
@@ -108,90 +108,49 @@ namespace GamesClub.Models
         }
 
         // Método para modificar un Videojuego
-        public int Modificar(Videojuego videojuego)
+        public int Modificar(Videojuego videoJuego)
         {
             try
             {
-                // Crear objeto de la clase conexión
-                Conexion conn = new();
+                int i = 0;
 
-                // Definir la conexión a la BD
-                conexion = new(conn.getCadConexion());
+                Conexion connec = new Conexion();
+                conexion = new(connec.getCadConexion());
                 conexion.Open();
+                string query = "update Videojuegos " +
+                    "set titulo = @titulo, genero = @genero, plataforma = @plataforma," +
+                    "fechaLanzamiento = @fechaLanzamiento, desarrollador = @desarrollador, publisher = @publisher," +
+                    "precio = @precio, descripcion = @descripcion where codVideojuego = @codVideojuego";
 
-                // Definir variable para almacenar el query
-                SqlCommand comando = new($"update Videojuegos set titulo = @titulo, genero = @genero, plataforma = @plataforma, fechaLanzamiento = @fechaLanzamiento, " +
-                    $"desarrollador = @desarrollador, publisher = @publisher, precio = @precio, descripcion = @descripcion where codVideojuego = @codVideojuego", conexion);
+                SqlCommand comando = new SqlCommand(query,conexion);
                 comando.Parameters.Add("@titulo", SqlDbType.VarChar);
                 comando.Parameters.Add("@genero", SqlDbType.VarChar);
                 comando.Parameters.Add("@plataforma", SqlDbType.VarChar);
                 comando.Parameters.Add("@fechaLanzamiento", SqlDbType.Date);
                 comando.Parameters.Add("@desarrollador", SqlDbType.VarChar);
                 comando.Parameters.Add("@publisher", SqlDbType.VarChar);
-                comando.Parameters.Add("@precio", SqlDbType.Decimal);
+                comando.Parameters.Add("@precio", SqlDbType.VarChar);
                 comando.Parameters.Add("@descripcion", SqlDbType.VarChar);
                 comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar);
 
-                // Pasar los datos digitados por el usuario a los parámetros
-                comando.Parameters["@titulo"].Value = videojuego.titulo;
-                comando.Parameters["@genero"].Value = videojuego.genero;
-                comando.Parameters["@plataforma"].Value = videojuego.plataforma;
-                comando.Parameters["@fechaLanzamiento"].Value = videojuego.fechaLanzamiento;
-                comando.Parameters["@desarrollador"].Value = videojuego.desarrollador;
-                comando.Parameters["@publisher"].Value = videojuego.publisher;
-                comando.Parameters["@precio"].Value = videojuego.precio;
-                comando.Parameters["@descripcion"].Value = videojuego.descripcion;
-                comando.Parameters["@codVideojuego"].Value = videojuego.codVideojuego;
+                comando.Parameters["@titulo"].Value = videoJuego.titulo;
+                comando.Parameters["@genero"].Value = videoJuego.genero;
+                comando.Parameters["@plataforma"].Value = videoJuego.plataforma;
+                comando.Parameters["@fechaLanzamiento"].Value = videoJuego.fechaLanzamiento;
+                comando.Parameters["@desarrollador"].Value = videoJuego.desarrollador;
+                comando.Parameters["@publisher"].Value = videoJuego.publisher;
+                comando.Parameters["@precio"].Value = videoJuego.precio;
+                comando.Parameters["@descripcion"].Value = videoJuego.descripcion;
+                comando.Parameters["@codVideojuego"].Value = videoJuego.codVideojuego;
 
-                // Ejecutar instrucción SQL
-                int modificados = comando.ExecuteNonQuery();
+                i = comando.ExecuteNonQuery();
                 conexion.Close();
-
-                // Devolvemos el numero de registros modificados en la base
-                return modificados;
+                return i;
             }
             catch (Exception ex)
             {
-                // Control de errores
                 string error = ex.Message;
                 return 0;
-            }
-        }
-
-        // Método para verificar si el código de videojuego ya existe
-        public bool CodExiste(string codVideojuego)
-        {
-            try
-            {
-                // Crear objeto de la clase conexión
-                Conexion conn = new();
-
-                // Definir la conexión a la BD
-                conexion = new(conn.getCadConexion());
-                conexion.Open();
-
-                // Definir variable para almacenar el query
-                SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @codVideojuego", conexion);
-                comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar).Value = codVideojuego;
-
-                // Crear un objeto SqlDataReader
-                SqlDataReader lector = comando.ExecuteReader();
-
-                // Verificar si el código ya existe
-                return lector.HasRows;
-            }
-            catch (Exception ex)
-            {
-                // Control de errores
-                string error = ex.Message;
-                return false;
-            }
-            finally
-            {
-                if (conexion != null)
-                {
-                    conexion.Close();
-                }
             }
         }
 
@@ -227,42 +186,51 @@ namespace GamesClub.Models
             }
         }
 
-        // Método para obtener un videojuego para modificar
-        public Videojuego VideojuegoModificar(string IdTipoEmpleado)
+        public bool CodExiste(string codVideojuego)
         {
-            // Crear objeto de la clase conexión
-            Conexion conn = new();
-
-            // Definir la conexión a la BD
-            conexion = new(conn.getCadConexion());
-            conexion.Open();
-
-            // Definir variable para almacenar el query
-            SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @codVideojuego", conexion);
-            comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar);
-            comando.Parameters["@codVideojuego"].Value = IdTipoEmpleado;
-
-            // Crear un objeto SqlDataReader
-            SqlDataReader lector = comando.ExecuteReader();
-
-            Videojuego videojuego = new();
-
-            // Obtener el videojuego
-            if (lector.Read())
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new(conex.getCadConexion()))
             {
-                videojuego.codVideojuego = lector["codVideojuego"].ToString();
-                videojuego.titulo = lector["titulo"].ToString();
-                videojuego.genero = lector["genero"].ToString();
-                videojuego.plataforma = lector["plataforma"].ToString();
-                videojuego.fechaLanzamiento = (DateTime)lector["fechaLanzamiento"];
-                videojuego.desarrollador = lector["desarrollador"].ToString();
-                videojuego.publisher = lector["publisher"].ToString();
-                videojuego.precio = (decimal)lector["precio"];
-                videojuego.descripcion = lector["descripcion"].ToString();
+                conexion.Open();
+                SqlCommand comando = new("select count(codVideojuego) from Videojuegos where codVideojuego = @codVideojuego", conexion);
+                comando.Parameters.AddWithValue("@codVideojuego", codVideojuego);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
             }
+        }
+
+        public Videojuego VideojuegoModificar(string id)
+        {
+            Conexion conec = new Conexion();
+            conexion = new SqlConnection(conec.getCadConexion());
+            conexion.Open();
+            string consulta = "SELECT * FROM Videojuegos WHERE codVideojuego = @codVideojuego";
+
+            SqlCommand comando = new SqlCommand(consulta,conexion);
+            comando.Parameters.Add("@codVideojuego",SqlDbType.VarChar);
+
+            comando.Parameters["@codVideojuego"].Value = id;
+
+            SqlDataReader reader = comando.ExecuteReader();
+
+            Videojuego videoJuego = new Videojuego();
+
+            if (reader.Read())
+            {
+                videoJuego.codVideojuego = reader["codVideojuego"].ToString();
+                videoJuego.titulo = reader["titulo"].ToString();
+                videoJuego.genero = reader["genero"].ToString();
+                videoJuego.plataforma = reader["plataforma"].ToString();
+                videoJuego.fechaLanzamiento = Convert.ToDateTime(reader["fechaLanzamiento"]);
+                videoJuego.desarrollador = reader["desarrollador"].ToString();
+                videoJuego.publisher = reader["publisher"].ToString();
+                videoJuego.precio = Convert.ToDecimal( reader["precio"]);
+                videoJuego.descripcion = reader["descripcion"].ToString();
+            }
+
             conexion.Close();
-            return videojuego;
+            return videoJuego;
         }
     }
 }
-

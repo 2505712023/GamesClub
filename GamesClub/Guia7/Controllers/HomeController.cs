@@ -1,6 +1,8 @@
+using GamesClub.Models;
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Threading.Tasks.Sources;
 
 namespace Guia7.Controllers
 {
@@ -12,26 +14,49 @@ namespace Guia7.Controllers
         {
             _logger = logger;
         }
+        // Usar TempData en Razor Pages
+        [TempData]
+        public string ErrorMessage { get; set; }
 
+        public void OnGet()
+        {
+            // C贸digo de l贸gica para OnGet
+        }
         public IActionResult Index()
         {
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
 
-            // Llamar al m閠odo "ListarTodos" y lo pasamos como par醡etro a la vista
+            // Llamar al m茅todo "ListarTodos" y lo pasamos como par谩metro a la vista
             return View(MTipEmp.ListarTodos());
         }
 
-        // M閠odo para crear un registro en la tabla TipoEmpleado
+        // M茅todo para crear un registro en la tabla TipoEmpleado
         public IActionResult Agregar()
         {
             return View();
         }
 
-        // Acci髇 que se ejecuta al dar clic en el bot髇 "Crear Nuevo"
+        // Acci贸n que se ejecuta al dar clic en el bot贸n "Crear Nuevo"
         [HttpPost]
         public IActionResult Agregar(IFormCollection collection)
-        { 
+        {
+            MantenimientoTipoEmpleado mTEmpleado = new();
+            if (mTEmpleado.IdExiste(collection["idTipoEmpleado"]))
+            {
+                TempData["ErrorMessage"] = "El C贸digo de Tipo Empleado ya existe";
+                return View(); // Regresa a la misma vista
+            }
+
+
+            //verifica si hay errores
+            if (!ModelState.IsValid)
+            {
+                // Verifica si el idTipoEmpleado ya existe
+               
+
+                return View(); // Si hay otros errores de validaci贸n
+            }
             // Crear objeto de la clase MantenimientoTipoEmpleado
             MantenimientoTipoEmpleado MTipEmp = new();
 
@@ -44,23 +69,31 @@ namespace Guia7.Controllers
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = Convert.ToBoolean(collection["estado"])
+                Estado = Convert.ToBoolean(collection["estado"][0])
             };
 
-            // Llamar al m閠odo Ingresar de la clase "MantenimientoTipoEmpleado"
+            // Llamar al m茅todo Ingresar de la clase "MantenimientoTipoEmpleado"
             MTipEmp.Ingresar(newTipoEmpleado);
 
-            // Llamar la acci髇 "Index"
+            // Llamar la acci贸n "Index"
             return RedirectToAction("Index");
         }
         public IActionResult Modificar(string IdTipoEmpleado)
         {
-            TipoEmpleado TipoEmp = new TipoEmpleado();
-            // Crear objeto de la clase MantenimientoTipoEmpleado
-            MantenimientoTipoEmpleado MTipEmp = new();
-            TipoEmp = MTipEmp.llenaDatos(IdTipoEmpleado);
+      
+            try
+            {
+                MantenimientoTipoEmpleado MtipoEmp = new MantenimientoTipoEmpleado();
+                // Crear objeto de la clase MantenimientoTipoEmpleado
+                TipoEmpleado TipEmp = MtipoEmp.ObtenerTipoEmpleado(IdTipoEmpleado);
 
-            return View("Modificar",TipoEmp);
+                return View(TipEmp);
+            }
+            catch (Exception ex)
+            {
+                ViewData["ErrorMessage"] = $"Ocurri贸 un error al eliminar: {ex.Message}";
+                return View("Index");  // Volver a la misma p谩gina
+            }
         }
         public IActionResult Privacy()
         {
@@ -77,25 +110,37 @@ namespace Guia7.Controllers
         public IActionResult Modificar(IFormCollection collection)
         {
             // Crear objeto de la clase MantenimientoTipoEmpleado
-            MantenimientoTipoEmpleado MTipEmp = new();
-
-            bool estado = collection["estado"].Count > 1 ?
-                  collection["estado"][0] == "true" :
-                  Convert.ToBoolean(collection["estado"]);
+            MantenimientoTipoEmpleado MTipEmp = new MantenimientoTipoEmpleado();
 
             // Crear objeto de tipo TipoEmpleado
-            TipoEmpleado newTipoEmpleado = new()
+            TipoEmpleado tipoEmp = new TipoEmpleado()
             {
                 IdTipoEmpleado = collection["idTipoEmpleado"],
                 Descripcion = collection["descripcion"],
-                Estado = estado
+                Estado = bool.Parse(collection["estado"])
             };
 
-            // Llamar al m閠odo Ingresar de la clase "MantenimientoTipoEmpleado"
-            MTipEmp.Actualizar(newTipoEmpleado);
+            // Llamar al m茅todo Ingresar de la clase "MantenimientoTipoEmpleado"
+            MTipEmp.Modificar(tipoEmp);
 
-            // Llamar la acci髇 "Index"
+            // Llamar la acci贸n "Index"
             return RedirectToAction("Index");
         }
+        //Acci贸n que tiene por objetivo eliminar los datos de un alumno
+        public IActionResult Eliminar(String IdTipoEmpleado)
+        {
+            MantenimientoTipoEmpleado MTipoEmp = new MantenimientoTipoEmpleado();
+            string errorMessage;
+            int resultado = MTipoEmp.Borrar(IdTipoEmpleado, out errorMessage);
+
+            if (resultado == 0 && !string.IsNullOrEmpty(errorMessage))
+            {
+                // Si hubo un error, pasar el mensaje de error a la vista
+                TempData["ErrorMessage"] = errorMessage;
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
