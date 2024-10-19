@@ -9,6 +9,9 @@ namespace GamesClub.Models
         // Definir variable para establecer la conexión a base de datos
         private SqlConnection? conexion;
 
+        // Definir una lista de tipo "Videojuegos"
+        List<Videojuego> listaVideojuegos = new();
+
         // Método para agregar un Videojuego
         public int Ingresar(Videojuego videojuego)
         {
@@ -67,7 +70,7 @@ namespace GamesClub.Models
             Conexion conn = new();
 
             // Definir una lista de tipo "Videojuegos"
-            List<Videojuego> listaVideojuegos = new();
+            // List<Videojuego> listaVideojuegos = new();
 
             // Definir la conexión a la BD
             conexion = new(conn.getCadConexion());
@@ -97,72 +100,102 @@ namespace GamesClub.Models
                     descripcion = lector["descripcion"].ToString()
                 };
 
-                //Agregar el registro a la lista
+                // Agregar cada videojuego a la lista de videojuegos
                 listaVideojuegos.Add(videojuego);
             }
-
-            // Cerramos la conexión
             conexion.Close();
-
-            // Retornamos la lista de TiposEmpleado
             return listaVideojuegos;
         }
 
-        //// Método para obtener un Videojuego por su código
-        //public Videojuego ObtenerPorId(int id)
-        //{
-        //    try
-        //    {
-        //        // Crear objeto de la clase conexión
-        //        Conexion conn = new();
+        // Método para modificar un Videojuego
+        public int Modificar(Videojuego videojuego)
+        {
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
 
-        //        // Definir la conexión a la BD
-        //        conexion = new(conn.getCadConexion());
-        //        conexion.Open();
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
 
-        //        // Definir variable para almacenar el query
-        //        SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @id", conexion);
-        //        comando.Parameters.AddWithValue("@id", id);
+                // Definir variable para almacenar el query
+                SqlCommand comando = new($"update Videojuegos set titulo = @titulo, genero = @genero, plataforma = @plataforma, fechaLanzamiento = @fechaLanzamiento, " +
+                    $"desarrollador = @desarrollador, publisher = @publisher, precio = @precio, descripcion = @descripcion where codVideojuego = @codVideojuego", conexion);
+                comando.Parameters.Add("@titulo", SqlDbType.VarChar);
+                comando.Parameters.Add("@genero", SqlDbType.VarChar);
+                comando.Parameters.Add("@plataforma", SqlDbType.VarChar);
+                comando.Parameters.Add("@fechaLanzamiento", SqlDbType.Date);
+                comando.Parameters.Add("@desarrollador", SqlDbType.VarChar);
+                comando.Parameters.Add("@publisher", SqlDbType.VarChar);
+                comando.Parameters.Add("@precio", SqlDbType.Decimal);
+                comando.Parameters.Add("@descripcion", SqlDbType.VarChar);
+                comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar);
 
-        //        // Crear un objeto SqlDataReader
-        //        SqlDataReader lector = comando.ExecuteReader();
+                // Pasar los datos digitados por el usuario a los parámetros
+                comando.Parameters["@titulo"].Value = videojuego.titulo;
+                comando.Parameters["@genero"].Value = videojuego.genero;
+                comando.Parameters["@plataforma"].Value = videojuego.plataforma;
+                comando.Parameters["@fechaLanzamiento"].Value = videojuego.fechaLanzamiento;
+                comando.Parameters["@desarrollador"].Value = videojuego.desarrollador;
+                comando.Parameters["@publisher"].Value = videojuego.publisher;
+                comando.Parameters["@precio"].Value = videojuego.precio;
+                comando.Parameters["@descripcion"].Value = videojuego.descripcion;
+                comando.Parameters["@codVideojuego"].Value = videojuego.codVideojuego;
 
-        //        // Si encuentra un registro
-        //        if (lector.Read())
-        //        {
-        //            // Crear y devolver un objeto de tipo Videojuego
-        //            Videojuego videojuego = new()
-        //            {
-        //                codVideojuego = lector["codVideojuego"].ToString(),
-        //                titulo = lector["titulo"].ToString(),
-        //                genero = lector["genero"].ToString(),
-        //                plataforma = lector["plataforma"].ToString(),
-        //                fechaLanzamiento = (DateTime)lector["fechaLanzamiento"],
-        //                desarrollador = lector["desarrollador"].ToString(),
-        //                publisher = lector["publisher"].ToString(),
-        //                precio = (decimal)lector["precio"],
-        //                descripcion = lector["descripcion"].ToString()
-        //            };
+                // Ejecutar instrucción SQL
+                int modificados = comando.ExecuteNonQuery();
+                conexion.Close();
 
-        //            // Cerrar la conexión
-        //            conexion.Close();
+                // Devolvemos el numero de registros modificados en la base
+                return modificados;
+            }
+            catch (Exception ex)
+            {
+                // Control de errores
+                string error = ex.Message;
+                return 0;
+            }
+        }
 
-        //            return videojuego;
-        //        }
+        // Método para verificar si el código de videojuego ya existe
+        public bool CodExiste(string codVideojuego)
+        {
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
 
-        //        // Cerrar la conexión si no encuentra registro
-        //        conexion.Close();
-        //        return null;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Control de errores
-        //        string error = ex.Message;
-        //        return null;
-        //    }
-        //}
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
 
-        // Método para eliminar un Videojuego por su código
+                // Definir variable para almacenar el query
+                SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @codVideojuego", conexion);
+                comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar).Value = codVideojuego;
+
+                // Crear un objeto SqlDataReader
+                SqlDataReader lector = comando.ExecuteReader();
+
+                // Verificar si el código ya existe
+                return lector.HasRows;
+            }
+            catch (Exception ex)
+            {
+                // Control de errores
+                string error = ex.Message;
+                return false;
+            }
+            finally
+            {
+                if (conexion != null)
+                {
+                    conexion.Close();
+                }
+            }
+        }
+
+        // Método para eliminar un Videojuego
         public int Eliminar(string codVideojuego)
         {
             try
@@ -176,16 +209,15 @@ namespace GamesClub.Models
 
                 // Definir variable para almacenar el query
                 SqlCommand comando = new($"delete from Videojuegos where codVideojuego = @codVideojuego", conexion);
-                comando.Parameters.AddWithValue("@codVideojuego", codVideojuego);
+                comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar);
+                comando.Parameters["@codVideojuego"].Value = codVideojuego;
 
                 // Ejecutar instrucción SQL
-                int eliminado = comando.ExecuteNonQuery();
-
-                // Cerrar la conexión
+                int eliminados = comando.ExecuteNonQuery();
                 conexion.Close();
 
-                // Devolvemos el número de registros eliminados
-                return eliminado;
+                // Devolvemos el numero de registros eliminados
+                return eliminados;
             }
             catch (Exception ex)
             {
@@ -194,5 +226,43 @@ namespace GamesClub.Models
                 return 0;
             }
         }
+
+        // Método para obtener un videojuego para modificar
+        public Videojuego VideojuegoModificar(string IdTipoEmpleado)
+        {
+            // Crear objeto de la clase conexión
+            Conexion conn = new();
+
+            // Definir la conexión a la BD
+            conexion = new(conn.getCadConexion());
+            conexion.Open();
+
+            // Definir variable para almacenar el query
+            SqlCommand comando = new($"select * from Videojuegos where codVideojuego = @codVideojuego", conexion);
+            comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar);
+            comando.Parameters["@codVideojuego"].Value = IdTipoEmpleado;
+
+            // Crear un objeto SqlDataReader
+            SqlDataReader lector = comando.ExecuteReader();
+
+            Videojuego videojuego = new();
+
+            // Obtener el videojuego
+            if (lector.Read())
+            {
+                videojuego.codVideojuego = lector["codVideojuego"].ToString();
+                videojuego.titulo = lector["titulo"].ToString();
+                videojuego.genero = lector["genero"].ToString();
+                videojuego.plataforma = lector["plataforma"].ToString();
+                videojuego.fechaLanzamiento = (DateTime)lector["fechaLanzamiento"];
+                videojuego.desarrollador = lector["desarrollador"].ToString();
+                videojuego.publisher = lector["publisher"].ToString();
+                videojuego.precio = (decimal)lector["precio"];
+                videojuego.descripcion = lector["descripcion"].ToString();
+            }
+            conexion.Close();
+            return videojuego;
+        }
     }
 }
+

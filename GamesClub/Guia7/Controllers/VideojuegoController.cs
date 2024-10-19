@@ -1,8 +1,8 @@
-﻿using GamesClub.Models;
+﻿
+using GamesClub.Models;
 using Guia7.Controllers;
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace GamesClub.Controllers
 {
@@ -36,6 +36,73 @@ namespace GamesClub.Controllers
         {
             // Crear objeto de la clase MantenimientoVideojuego
             MantenimientoVideojuego MVideojuego = new();
+            ViewBag.Videojuegos = MVideojuego.ListarTodos();
+
+            if (ModelState.IsValid)
+            {
+                if (MVideojuego.CodExiste(collection["codVideojuego"]))
+                {
+                    TempData["ErrorMessage"] = "El código de Videojuego ya existe";
+                    return View();
+                }
+
+                // Verificar campos requeridos
+                if (string.IsNullOrEmpty(collection["codVideojuego"].ToString()) ||
+                    string.IsNullOrEmpty(collection["titulo"].ToString()) ||
+                    string.IsNullOrEmpty(collection["genero"].ToString()) ||
+                    string.IsNullOrEmpty(collection["plataforma"].ToString()) ||
+                    string.IsNullOrEmpty(collection["fechaLanzamiento"].ToString()) ||
+                    string.IsNullOrEmpty(collection["desarrollador"].ToString()) ||
+                    string.IsNullOrEmpty(collection["publisher"].ToString()) ||
+                    string.IsNullOrEmpty(collection["precio"].ToString()) ||
+                    string.IsNullOrEmpty(collection["descripcion"].ToString()))
+                {
+                    TempData["ErrorMessage"] = "Todos los campos son requeridos.";
+                    return View(); // Regresar a la vista con el mensaje de error
+                }
+
+                // Crear objeto de tipo Videojuego
+                Videojuego videojuego = new()
+                {
+                    codVideojuego = collection["codVideojuego"].ToString(),
+                    titulo = collection["titulo"].ToString(),
+                    genero = collection["genero"].ToString(),
+                    plataforma = collection["plataforma"].ToString(),
+                    fechaLanzamiento = Convert.ToDateTime(collection["fechaLanzamiento"]),
+                    desarrollador = collection["desarrollador"].ToString(),
+                    publisher = collection["publisher"].ToString(),
+                    precio = Convert.ToDecimal(collection["precio"].ToString().Replace("$", "")),
+                    descripcion = collection["descripcion"].ToString()
+                };
+
+                // Llamar al método Ingresar de la clase "MantenimientoVideojuego"
+                MVideojuego.Ingresar(videojuego);
+
+                // Llamar la acción "Index"
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                // En caso de error, mostrar mensaje o volver a la vista de agregar
+                ViewBag.ErrorMessage = "Error al guardar los datos.";
+                return View();
+            }
+        }
+
+        public IActionResult Modificar(string IdTipoEmpleado)
+        {
+            MantenimientoVideojuego Mvideojuego = new MantenimientoVideojuego();
+
+            Videojuego videojuego = new Videojuego();
+            videojuego = Mvideojuego.VideojuegoModificar(IdTipoEmpleado);
+            return View(videojuego);
+        }
+
+        [HttpPost]
+        public IActionResult Modificar(IFormCollection collection)
+        {
+            // Crear objeto de la clase MantenimientoVideojuego
+            MantenimientoVideojuego MVideojuego = new();
 
             // Crear objeto de tipo Videojuego
             Videojuego videojuego = new()
@@ -51,48 +118,20 @@ namespace GamesClub.Controllers
                 descripcion = collection["descripcion"].ToString()
             };
 
-            // Llamar al método Ingresar de la clase "MantenimientoVideojuego"
-            MVideojuego.Ingresar(videojuego);
+            // Llamar al método Modificar de la clase "MantenimientoVideojuego"
+            MVideojuego.Modificar(videojuego);
 
             // Llamar la acción "Index"
             return RedirectToAction("Index");
         }
 
-        // Acción GET para mostrar la página de confirmación de eliminación
-        public IActionResult Eliminar(String codVideojuego)
+        // Método para eliminar un registro en la tabla Videojuegos
+        public IActionResult Eliminar(string codVideojuego)
         {
-            //Definimos un objeto de tipo "MantenimientoTipoEmpleado"
             MantenimientoVideojuego MVideojuego = new();
-
-            //Llamamos al método "Borrar"
-            MVideojuego.Eliminar(codVideojuego);
-
-            //Invocamos acción "Index"
-
-            return RedirectToAction("Index");
+            MVideojuego.Eliminar(codVideojuego); // Llamar al método Eliminar de MantenimientoVideojuego
+            return RedirectToAction("Index"); // Redirigir a la lista de videojuegos
         }
-
-        //// Acción POST para confirmar y realizar la eliminación
-        //[HttpPost, ActionName("Eliminar")]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult ConfirmarEliminacion(int id)
-        //{
-        //    // Crear objeto de la clase MantenimientoVideojuego
-        //    MantenimientoVideojuego MVideojuego = new();
-
-        //    // Obtener el videojuego por su id
-        //    Videojuego videojuego = MVideojuego.ObtenerPorId(id);
-
-        //    if (videojuego == null)
-        //    {
-        //        return NotFound(); // Si no se encuentra, retornar 404
-        //    }
-
-        //    // Llamar al método para eliminar el videojuego
-        //    MVideojuego.Eliminar(id);
-
-        //    // Redirigir a la página principal después de eliminar
-        //    return RedirectToAction(nameof(Index));
-        //}
     }
 }
+
