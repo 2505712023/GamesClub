@@ -1,4 +1,6 @@
-﻿namespace GamesClub.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace GamesClub.Models
 {
     public class Empleado
     {
@@ -20,4 +22,5 @@
         public string Clave { get; set; }
     }
     //Listo
+
 }

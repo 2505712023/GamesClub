@@ -1,91 +1,87 @@
 ﻿@model GamesClub.Models.Empleado
 @{
-    ViewData["Title"] = "Modificar";
+    ViewData["Title"] = "Modificar Empleado";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="card">
     <div class="card-header">
-        Modificar empleado
+        Modificar Empleado
     </div>
     <div class="card-body">
-        <form asp-action="Modificar" asp-controller="Empleado" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label asp-for="codEmpleado" class="form-label"></label>
-                <input asp-for="codEmpleado" type="text" class="form-control" >
+        @if (Model != null && ViewBag.TiposEmpleado != null)
+        {
+            <form asp-action="Modificar" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label asp-for="codEmpleado" class="form-label">Código de Empleado</label>
+                    <input type="text" class="form-control" asp-for="codEmpleado" readonly />
+                </div>
 
-            </div>
-            <div class="mb-3">
-                <label for="idTipoEmpleado" class="form-label">Tipo de Empleado</label>
-                <select class="form-control" id="idTipoEmpleado" name="idTipoEmpleado"  required>
-                    <option value="">Selecciona un tipo</option>
-                    @if (ViewBag.TipoEmpleados != null)
+                <div class="mb-3">
+                    <label asp-for="IdTipoEmpleado" class="form-label">Tipo de Empleado</label>
+                    <select asp-for="IdTipoEmpleado" class="form-control" asp-items="@(new SelectList(ViewBag.TiposEmpleado, "Value", "Text", Model.IdTipoEmpleado))">
+                        <option value="">Seleccione un tipo de empleado</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Nombres" class="form-label">Nombres</label>
+                    <input asp-for="Nombres" type="text" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Apellidos" class="form-label">Apellidos</label>
+                    <input asp-for="Apellidos" type="text" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Dui" class="form-label">DUI</label>
+                    <input asp-for="Dui" type="text" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Estado" class="form-label">Estado</label>
+                    <select asp-for="Estado" class="form-control">
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Imagen Actual:</label>
+                    @if (!string.IsNullOrEmpty(Model.Imagen))
                     {
-                        foreach (var tipoEmpleado in (List<TipoEmpleado>)ViewBag.TipoEmpleados)
-                        {
-                            <option value="@tipoEmpleado.IdTipoEmpleado">@tipoEmpleado.Descripcion</option>
-                        }
+                        <div>
+                            <img src="data:image/png;base64,@Model.Imagen" alt="Imagen del Empleado" style="max-width: 200px; max-height: 200px;" />
+                        </div>
                     }
-                </select>
-            </div>
+                    else
+                    {
+                        <p>No hay imagen disponible.</p>
+                    }
+                    <input type="file" class="form-control" name="imagen"/>
+                    <small class="form-text text-muted">Seleccione una nueva imagen si desea cambiarla. (Opcional)</small>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="Nombres" class="form-label"></label>
-                <input asp-for="Nombres" type="text" class="form-control">
+                <div class="mb-3">
+                    <label asp-for="Usuario" class="form-label">Usuario</label>
+                    <input asp-for="Usuario" type="text" class="form-control" required />
+                </div>
 
-            </div>
-            <div class="mb-3">
-                <label asp-for="Apellidos" class="form-label"></label>
-                <input asp-for="Apellidos" type="text" class="form-control">
+                <div class="mb-3">
+                    <label asp-for="Clave" class="form-label">Clave</label>
+                    <input asp-for="Clave" type="text" class="form-control" required />
+                </div>
 
-            </div>
-            <div class="mb-3">
-                <label asp-for="Dui" class="form-label"></label>
-                <input asp-for="Dui" type="text" class="form-control">
-
-            </div>
-            <div class="mb-3">
-                <label asp-for="Estado" class="form-label"></label>
-                <select asp-for="Estado" class="form-control" required>
-                    <option value="" disabled="" selected="">Seleccionar estado</option>
-                    <option value="true">Activo</option>
-                    <option value="false">Inactivo</option>
-                </select>
-
-            </div>
-            <div class="mb-3">
-                <label asp-for="Imagen" class="form-label">Cargar Imagen</label>
-                <input asp-for="Imagen" type="file" class="form-control" accept="image/*">
-                <span asp-validation-for="Imagen" class="text-danger"></span> <!-- Para mostrar errores de validación -->
-            </div>
-            <div class="mb-3">
-                <label asp-for="Usuario" class="form-label"></label>
-                <input asp-for="Usuario" type="text" class="form-control">
-
-            </div>
-            <div class="mb-3">
-                <label asp-for="Clave" class="form-label"></label>
-                <input asp-for="Clave" type="password" class="form-control">
-
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-            <a asp-action="Index" asp-controller="Home" class="btn btn-warning">Volver a la lista</a>
-        </form>
-
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a asp-action="Empleado" asp-controller="Empleado" class="btn btn-warning">Volver a la lista</a>
+            </form>
+        }
+        else
+        {
+            <p>No se encontraron datos para este empleado.</p>
+        }
     </div>
-
-
 </div>
 
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Utiliza Json.Encode para evitar problemas de codificación
-            var errorMessage = @Html.Raw(Json.Serialize(TempData["ErrorMessage"]));
-            if (errorMessage) {
-                alert(errorMessage); // Muestra el mensaje de error en una ventana emergente
-            }
-        });
-    </script>
-}
