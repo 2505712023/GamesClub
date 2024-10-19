@@ -1,4 +1,5 @@
-﻿using GamesClub.Models;
+﻿
+using GamesClub.Models;
 using Guia7.Controllers;
 using Guia7.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -124,5 +125,13 @@ namespace GamesClub.Controllers
             return RedirectToAction("Index");
         }
 
+        // Método para eliminar un registro en la tabla Videojuegos
+        public IActionResult Eliminar(string codVideojuego)
+        {
+            MantenimientoVideojuego MVideojuego = new();
+            MVideojuego.Eliminar(codVideojuego); // Llamar al método Eliminar de MantenimientoVideojuego
+            return RedirectToAction("Index"); // Redirigir a la lista de videojuegos
+        }
     }
 }
+

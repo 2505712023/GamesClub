@@ -10,7 +10,7 @@
     <link href="~/css/videojuego.css" rel="stylesheet" />
 }
 
-    <h2 style="color: darkorange">Listado de Videojuegos </h2>
+<h2 style="color: darkorange">Listado de Videojuegos </h2>
 <div class="contenedor-tabla">
         <table class="table table-bordered table-striped">
         <thead>
@@ -45,11 +45,11 @@
                     @* Columna de mantenimiento *@
                     <td>
                         <a class="btn btn-primary btn-sm" asp-action="Modificar" asp-controller="Videojuego" asp-route-IdTipoEmpleado="@videojuego.codVideojuego">Modificar</a>
-                        <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-controller="Videojuego" asp-route-IdTipoEmpleado="@videojuego.codVideojuego">Eliminar</a>
+                        <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-controller="Videojuego" asp-route-codVideojuego="@videojuego.codVideojuego" onclick="return confirm('¿Estás seguro de que deseas eliminar este videojuego?');">Eliminar</a>
                     </td>
                 </tr>
             }
         </tbody>
-        <a class="btn btn-success btn-sm" asp-action="Agregar" asp-controller="Videojuego">Crear Nuevo</a>
     </table>
+  <a class="btn btn-success btn-sm" asp-action="Agregar" asp-controller="Videojuego">Crear Nuevo</a>
 </div>

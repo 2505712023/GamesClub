@@ -70,7 +70,7 @@ namespace GamesClub.Models
             Conexion conn = new();
 
             // Definir una lista de tipo "Videojuegos"
-          //  List<Videojuego> listaVideojuegos = new();
+            List<Videojuego> listaVideojuegos = new();
 
             // Definir la conexión a la BD
             conexion = new(conn.getCadConexion());
@@ -100,17 +100,14 @@ namespace GamesClub.Models
                     descripcion = lector["descripcion"].ToString()
                 };
 
-                //Agregar el registro a la lista
+                // Agregar cada videojuego a la lista de videojuegos
                 listaVideojuegos.Add(videojuego);
             }
-
-            // Cerramos la conexión
             conexion.Close();
-
-            // Retornamos la lista de TiposEmpleado
             return listaVideojuegos;
         }
 
+        // Método para modificar un Videojuego
         public int Modificar(Videojuego videoJuego)
         {
             try
@@ -126,7 +123,6 @@ namespace GamesClub.Models
                     "precio = @precio, descripcion = @descripcion where codVideojuego = @codVideojuego";
 
                 SqlCommand comando = new SqlCommand(query,conexion);
-
                 comando.Parameters.Add("@titulo", SqlDbType.VarChar);
                 comando.Parameters.Add("@genero", SqlDbType.VarChar);
                 comando.Parameters.Add("@plataforma", SqlDbType.VarChar);
@@ -153,6 +149,38 @@ namespace GamesClub.Models
             }
             catch (Exception ex)
             {
+                string error = ex.Message;
+                return 0;
+            }
+        }
+
+        // Método para eliminar un Videojuego
+        public int Eliminar(string codVideojuego)
+        {
+            try
+            {
+                // Crear objeto de la clase conexión
+                Conexion conn = new();
+
+                // Definir la conexión a la BD
+                conexion = new(conn.getCadConexion());
+                conexion.Open();
+
+                // Definir variable para almacenar el query
+                SqlCommand comando = new($"delete from Videojuegos where codVideojuego = @codVideojuego", conexion);
+                comando.Parameters.Add("@codVideojuego", SqlDbType.VarChar);
+                comando.Parameters["@codVideojuego"].Value = codVideojuego;
+
+                // Ejecutar instrucción SQL
+                int eliminados = comando.ExecuteNonQuery();
+                conexion.Close();
+
+                // Devolvemos el numero de registros eliminados
+                return eliminados;
+            }
+            catch (Exception ex)
+            {
+                // Control de errores
                 string error = ex.Message;
                 return 0;
             }
@@ -202,7 +230,7 @@ namespace GamesClub.Models
             }
 
             conexion.Close();
-            return videoJuego;     
+            return videoJuego;
         }
     }
 }
