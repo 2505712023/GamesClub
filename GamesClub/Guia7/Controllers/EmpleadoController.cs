@@ -8,11 +8,6 @@ namespace GamesClub.Controllers
 {
     public class EmpleadoController : Controller
     {
-
-
-
-
-
         public IActionResult Empleado()
         {
             MantenimientoEmpleado mEmpleado = new MantenimientoEmpleado();
@@ -23,11 +18,8 @@ namespace GamesClub.Controllers
         public IActionResult Modificar(string CodEmpleado) 
         {
             MantenimientoEmpleado mEmpleado = new MantenimientoEmpleado();
-
             Empleado empleado = mEmpleado.Consultar(CodEmpleado);
             
-
-
             return View(empleado);
         
         }
@@ -122,7 +114,6 @@ namespace GamesClub.Controllers
 
         // Acción que se ejecutará cuando se presione el botón de tipo submit, recibe como parámetros los datos cargador en el formulario
         [HttpPost]
-     
         public IActionResult Agregar(IFormCollection collection)
         {
             MantenimientoEmpleado mEmpleado = new();

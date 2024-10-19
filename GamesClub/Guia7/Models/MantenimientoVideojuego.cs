@@ -158,6 +158,20 @@ namespace GamesClub.Models
             }
         }
 
+        public bool CodExiste(string codVideojuego)
+        {
+            Conexion conex = new Conexion();
+            using (SqlConnection conexion = new(conex.getCadConexion()))
+            {
+                conexion.Open();
+                SqlCommand comando = new("select count(codVideojuego) from Videojuegos where codVideojuego = @codVideojuego", conexion);
+                comando.Parameters.AddWithValue("@codVideojuego", codVideojuego);
+
+                int count = (int)comando.ExecuteScalar();
+                return count > 0; // Si el conteo es mayor a 0, significa que ya existe
+            }
+        }
+
         public Videojuego VideojuegoModificar(string id)
         {
             Conexion conec = new Conexion();
@@ -190,6 +204,5 @@ namespace GamesClub.Models
             conexion.Close();
             return videoJuego;     
         }
-
     }
 }
