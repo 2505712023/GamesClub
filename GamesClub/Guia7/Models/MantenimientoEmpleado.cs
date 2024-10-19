@@ -95,14 +95,10 @@ namespace GamesClub.Models
 
         public int Modificar(Empleado empleado)
         {
-
-
-
-
             try
             {
                 // Verificar campos requeridos
-                if (string.IsNullOrEmpty(empleado.codEmpleado) ||
+               /* if (string.IsNullOrEmpty(empleado.codEmpleado) ||
                     string.IsNullOrEmpty(empleado.IdTipoEmpleado) ||
                     string.IsNullOrEmpty(empleado.Nombres) ||
                     string.IsNullOrEmpty(empleado.Apellidos) ||
@@ -113,7 +109,8 @@ namespace GamesClub.Models
                     string.IsNullOrEmpty(empleado.Clave))
                 {
                     return -1; // Retorna -1 si hay campos requeridos vacíos
-                }
+                }*/
+
                 //crear objeto de la clase conexión
                 Conexion conex = new();
                 //definir la conexipin a la BD

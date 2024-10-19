@@ -32,7 +32,27 @@ namespace GamesClub.Controllers
         
         }
         [HttpPost]
-        public IActionResult Modificar(IFormCollection collection)
+
+        public IActionResult Modificar(IFormCollection collection)  { 
+            MantenimientoEmpleado MEmp =new MantenimientoEmpleado();
+            Empleado emp=new Empleado();
+            {
+                emp.codEmpleado = collection["codEmpleado"].ToString();
+                emp.IdTipoEmpleado = collection["idTipoEmpleado"].ToString();
+                emp.Nombres = collection["nombres"].ToString();
+                emp.Apellidos = collection["apellidos"].ToString();
+                emp.Dui = collection["dui"].ToString();
+                emp.Estado = !string.IsNullOrEmpty(collection["estado"]) && bool.Parse(collection["estado"]);
+                emp.Usuario = collection["usuario"].ToString();
+                emp.Clave = collection["clave"].ToString();
+
+
+            }
+            MEmp.Modificar(emp);
+            return View("Index"); 
+        
+        }
+        /*public IActionResult Modificar(IFormCollection collection)
         {
             MantenimientoEmpleado mEmpleado = new();
             ViewBag.TipoEmpleados = mEmpleado.listaTEmpleado();
@@ -78,7 +98,7 @@ namespace GamesClub.Controllers
 
                 // Verificar campos requeridos
                 if (string.IsNullOrEmpty(emp.codEmpleado) ||
-                    string.IsNullOrEmpty(emp.IdTipoEmpleado) ||
+                   string.IsNullOrEmpty(emp.IdTipoEmpleado) ||
                     string.IsNullOrEmpty(emp.Nombres) ||
                     string.IsNullOrEmpty(emp.Apellidos) ||
                     string.IsNullOrEmpty(emp.Dui) ||
@@ -89,7 +109,7 @@ namespace GamesClub.Controllers
                     TempData["ErrorMessage"] = "Todos los campos son requeridos.";
                     return View(); // Regresar a la vista con el mensaje de error
                 }
-
+               
                 int resultado = mEmpleado.Ingresar(emp);
 
                 if (resultado <= 0)
@@ -105,7 +125,7 @@ namespace GamesClub.Controllers
                 ViewBag.ErrorMessage = "Error al guardar los datos.";
                 return View();
             }
-        }
+        }*/
         /*Acció  que tiene por objeto mostrar la vista con un formulario HTML que permita ingresar los datos deun tipo de empleado*/
 
 
